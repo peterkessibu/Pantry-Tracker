@@ -1,113 +1,220 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { db } from './firebase';
+import { collection, doc, setDoc, deleteDoc, onSnapshot, query } from 'firebase/firestore';
+
+const HomePage = () => {
+  const [inventory, setInventory] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [itemName, setItemName] = useState('');
+  const [itemQuantity, setItemQuantity] = useState('');
+  const [itemPrice, setItemPrice] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSorted, setIsSorted] = useState(false);
+  const router = useRouter();
+  
+  useEffect(() => {
+    const inventoryRef = collection(db, 'inventory');
+    const inventoryQuery = query(inventoryRef);
+    const unsubscribeInventory = onSnapshot(inventoryQuery, (snapshot) => {
+      const inventoryList = snapshot.docs.map((doc) => ({
+        name: doc.id,
+        ...doc.data()
+      }));
+      setInventory(inventoryList);
+    });
+
+    return () => unsubscribeInventory();
+  }, []);
+
+  const addItem = useCallback(async () => {
+    if (!itemName || !itemQuantity || !itemPrice) return;
+    try {
+      const docRef = doc(db, 'inventory', itemName);
+      await setDoc(docRef, {
+        quantity: parseInt(itemQuantity),
+        price: parseFloat(itemPrice)
+      }, { merge: true });
+      setItemName('');
+      setItemQuantity('');
+      setItemPrice('');
+      handleClose();
+    } catch (error) {
+      console.error("Error adding item: ", error);
+    }
+  }, [itemName, itemQuantity, itemPrice]);
+
+  const removeItem = useCallback(async (item) => {
+    try {
+      const docRef = doc(db, 'inventory', item);
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Error removing item: ", error);
+    }
+  }, []);
+
+  const updateItemQuantity = useCallback(async (itemName, newQuantity) => {
+    try {
+      const docRef = doc(db, 'inventory', itemName);
+      await setDoc(docRef, { quantity: newQuantity }, { merge: true });
+    } catch (error) {
+      console.error("Error updating item quantity: ", error);
+    }
+  }, []);
+
+  const getTotalPrices = (inventoryList) => {
+    let overallTotal = 0;
+    const inventoryWithTotals = inventoryList.map(({ name, quantity, price }) => {
+      const total = quantity * price;
+      overallTotal += total;
+      return { name, quantity, price, total };
+    });
+    return { inventoryWithTotals, overallTotal };
+  };
+
+  const { inventoryWithTotals, overallTotal } = getTotalPrices(inventory);
+
+  const filteredInventory = inventoryWithTotals.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortItems = () => {
+    const sortedInventory = [...filteredInventory].sort((a, b) => a.name.localeCompare(b.name));
+    setInventory(sortedInventory);
+    setIsSorted(true);
+  };
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.js</code>
+    <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-5 mx-4">
+      {/* Title Section */}
+      <div className="p-4 m-4 bg-gray-100 rounded-lg flex justify-center brightness-200">
+        <p className='font-extrabold text-2xl'>
+          Box-It.
         </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
       </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      {/* Search Input */}
+      <div className="w-full mb-4 flex items-center justify-center">
+        <input
+          type="text"
+          placeholder="Search items..."
+          className="border border-[#10423e] bg-white text-[#10423e] placeholder:text-gray-500 p-2 rounded-lg shadow-xl focus:outline-none focus:ring-2 focus:ring-[#408d86] focus:border-transparent w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      {/* Add Item Modal */}
+      <div
+        className={`fixed z-0 inset-0 flex items-center justify-center bg-black bg-opacity-50 ${open ? 'block' : 'hidden'}`}
+      >
+        <div className="bg-white rounded-xl border-green-900 shadow-xl flex flex-col gap-4 w-2/3 md:w-1/2 lg:w-1/3 xl:w-1/4 relative p-6">
+          <button
+            className="absolute top-2 right-2 bg-red-700 text-white p-2 rounded-full hover:bg-red-600"
+            onClick={handleClose}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" x="0px" y="0px" width="15" height="15" viewBox="0 0 50 50">
+              <path d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
+            </svg>
+          </button>
+          <h2 className="text-base md:text-xl lg:text-2xl font-bold text-black text-center">Add Item</h2>
+          <div className="flex flex-col gap-4">
+            <input
+              type="text"
+              className="border-gray-600 p-2 text-black"
+              placeholder="Item"
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+            />
+            <input
+              type="number"
+              className="border p-2 text-black rounded-lg"
+              placeholder="Quantity"
+              value={itemQuantity}
+              onChange={(e) => setItemQuantity(e.target.value)}
+            />
+            <input
+              type="number"
+              className="border p-2 text-black rounded-lg"
+              placeholder="Price"
+              value={itemPrice}
+              onChange={(e) => setItemPrice(e.target.value)}
+            />
+            <button
+              className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
+              onClick={addItem}
+            >
+              Add
+            </button>
+          </div>
+        </div>
       </div>
-    </main>
+
+      {/* Add New Item Button */}
+      <div className='flex flex-row justify-between items-center mx-6'>
+        <button
+          className="bg-[#408d86] text-white p-2 rounded-lg hover:bg-[#306d6b] mx-6"
+          onClick={handleOpen}
+        >
+          Add New Item
+        </button>
+
+        {/* Sort Items Button */}
+        <button
+          className="bg-gray-700 text-white p-2 rounded-lg hover:bg-gray-600 mx-6"
+          onClick={sortItems}
+        >
+          Sort Items
+        </button>
+      </div>
+
+      {/* Inventory Items Section */}
+      <div className="w-screen m-4 p-10 rounded-xl border-[#10423e] shadow-xl bg-white">
+        <div className="bg-[#408d86] py-4 flex justify-center">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 p-6">Inventory Items</h2>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4">
+          {filteredInventory.map((item) => (
+            <div key={item.name} className="bg-white border-2 border-green-700 rounded-lg shadow-md p-4">
+              <h3 className="text-lg font-bold">{item.name}</h3>
+              <p>Quantity: {item.quantity}</p>
+              <p>Price: ${item.price.toFixed(2)}</p>
+              <p>Total: ${item.total.toFixed(2)}</p>
+              <div className="flex gap-2">
+                <button
+                  className="bg-green-500 text-white p-2 rounded-md shadow-md hover:bg-green-600 transition-colors duration-300"
+                  onClick={() => updateItemQuantity(item.name, item.quantity + 1)}
+                >
+                  +
+                </button>
+                <button
+                  className="bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-red-600 transition-colors duration-300"
+                  onClick={() => updateItemQuantity(item.name, item.quantity - 1)}
+                  disabled={item.quantity <= 0}
+                >
+                  -
+                </button>
+              </div>
+              <button
+                className="bg-red-600 text-white p-2 rounded-md shadow-md hover:bg-red-700 transition-colors duration-300 mt-2"
+                onClick={() => removeItem(item.name)}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end mt-4">
+          <div className="font-bold text-lg">Total: ${overallTotal.toFixed(2)}</div>
+        </div>
+      </div>
+    </div>  
   );
-}
+};
+
+export default HomePage;
