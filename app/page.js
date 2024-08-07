@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { db } from './firebase';
 import { collection, doc, setDoc, deleteDoc, onSnapshot, query } from 'firebase/firestore';
+import { Analytics } from "@vercel/analytics/react"
 
 const HomePage = () => {
   const [inventory, setInventory] = useState([]);
@@ -32,10 +33,12 @@ const HomePage = () => {
   const addItem = useCallback(async () => {
     if (!itemName || !itemQuantity || !itemPrice) return;
     try {
+      const total = parseInt(itemQuantity) * parseFloat(itemPrice);
       const docRef = doc(db, 'inventory', itemName);
       await setDoc(docRef, {
         quantity: parseInt(itemQuantity),
-        price: parseFloat(itemPrice)
+        price: parseFloat(itemPrice),
+        total: total
       }, { merge: true });
       setItemName('');
       setItemQuantity('');
@@ -55,10 +58,11 @@ const HomePage = () => {
     }
   }, []);
 
-  const updateItemQuantity = useCallback(async (itemName, newQuantity) => {
+  const updateItemQuantity = useCallback(async (itemName, newQuantity, price) => {
     try {
+      const total = newQuantity * price;
       const docRef = doc(db, 'inventory', itemName);
-      await setDoc(docRef, { quantity: newQuantity }, { merge: true });
+      await setDoc(docRef, { quantity: newQuantity, total: total }, { merge: true });
     } catch (error) {
       console.error("Error updating item quantity: ", error);
     }
@@ -66,10 +70,10 @@ const HomePage = () => {
 
   const getTotalPrices = (inventoryList) => {
     let overallTotal = 0;
-    const inventoryWithTotals = inventoryList.map(({ name, quantity, price }) => {
-      const total = quantity * price;
-      overallTotal += total;
-      return { name, quantity, price, total };
+    const inventoryWithTotals = inventoryList.map(({ name, quantity, price, total }) => {
+      const itemTotal = total !== undefined ? total : quantity * price;
+      overallTotal += itemTotal;
+      return { name, quantity, price, total: itemTotal };
     });
     return { inventoryWithTotals, overallTotal };
   };
@@ -90,20 +94,21 @@ const HomePage = () => {
   const handleClose = () => setOpen(false);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-5 mx-4">
+    
+    <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-5">
       {/* Title Section */}
       <div className="p-4 m-4 bg-gray-100 rounded-lg flex justify-center brightness-200">
         <p className='font-extrabold text-2xl'>
           Box-It.
         </p>
       </div>
-
+      <Analytics/>
       {/* Search Input */}
       <div className="w-full mb-4 flex items-center justify-center">
         <input
           type="text"
           placeholder="Search items..."
-          className="border border-[#10423e] bg-white text-[#10423e] placeholder:text-gray-500 p-2 rounded-lg shadow-xl focus:outline-none focus:ring-2 focus:ring-[#408d86] focus:border-transparent w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3"
+          className="border border-[#10423e] bg-white text-[#10423e] placeholder:text-gray-500 p-2 m-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-[#408d86] focus:border-transparent w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -174,7 +179,7 @@ const HomePage = () => {
       </div>
 
       {/* Inventory Items Section */}
-      <div className="w-screen m-4 p-10 rounded-xl border-[#10423e] shadow-xl bg-white">
+      <div className="w-4xl p-10 rounded-xl border-[#10423e] shadow-xl bg-white">
         <div className="bg-[#408d86] py-4 flex justify-center">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 p-6">Inventory Items</h2>
         </div>
@@ -184,18 +189,18 @@ const HomePage = () => {
               <h3 className="text-lg font-bold">{item.name}</h3>
               <p>Quantity: {item.quantity}</p>
               <p>Price: ${item.price.toFixed(2)}</p>
-              <p>Total: ${item.total.toFixed(2)}</p>
+              <p>Total: ${item.total ? item.total.toFixed(2) : (item.quantity * item.price).toFixed(2)}</p>
               <div className="flex gap-2">
                 <button
-                  className="bg-green-500 text-white p-2 rounded-md shadow-md hover:bg-green-600 transition-colors duration-300"
-                  onClick={() => updateItemQuantity(item.name, item.quantity + 1)}
+                  className="bg-green-500 text-white p-1 rounded-md shadow-md hover:bg-green-600 transition-colors duration-300"
+                  onClick={() => updateItemQuantity(item.name, item.quantity + 1, item.price)}
                 >
                   +
                 </button>
                 <button
-                  className="bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-red-600 transition-colors duration-300"
-                  onClick={() => updateItemQuantity(item.name, item.quantity - 1)}
-                  disabled={item.quantity <= 0}
+                  className="bg-red-500 text-white p-1 rounded-md shadow-md hover:bg-red-600 transition-colors duration-300"
+                  onClick={() => updateItemQuantity(item.name, item.quantity - 1, item.price)}
+                  disabled={item.quantity === 0}
                 >
                   -
                 </button>
