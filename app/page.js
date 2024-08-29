@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { db } from './firebase';
 import { collection, doc, setDoc, deleteDoc, onSnapshot, query } from 'firebase/firestore';
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
 
 const HomePage = () => {
   const [inventory, setInventory] = useState([]);
@@ -12,6 +12,8 @@ const HomePage = () => {
   const [itemQuantity, setItemQuantity] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSorted, setIsSorted] = useState(false);
+  const [editMode, setEditMode] = useState(false);  // New state for edit mode
+  const [editingItem, setEditingItem] = useState(null);  // New state for the item being edited
   const router = useRouter();
 
   useEffect(() => {
@@ -20,7 +22,7 @@ const HomePage = () => {
     const unsubscribeInventory = onSnapshot(inventoryQuery, (snapshot) => {
       const inventoryList = snapshot.docs.map((doc) => ({
         name: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setInventory(inventoryList);
     });
@@ -37,9 +39,11 @@ const HomePage = () => {
       }, { merge: true });
       setItemName('');
       setItemQuantity('');
+      setEditMode(false);  // Reset edit mode
+      setEditingItem(null);  // Clear editing item state
       handleClose();
     } catch (error) {
-      console.error("Error adding item: ", error);
+      console.error("Error adding/editing item: ", error);
     }
   }, [itemName, itemQuantity]);
 
@@ -61,7 +65,7 @@ const HomePage = () => {
     }
   }, []);
 
-  const filteredInventory = inventory.filter(item =>
+  const filteredInventory = inventory.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -72,7 +76,19 @@ const HomePage = () => {
   };
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setEditMode(false);  // Reset edit mode on close
+    setEditingItem(null);  // Clear editing item state on close
+  };
+
+  const handleEdit = (item) => {
+    setEditMode(true);  // Enable edit mode
+    setEditingItem(item);  // Set the item to be edited
+    setItemName(item.name);  // Pre-fill with item name
+    setItemQuantity(item.quantity.toString());  // Pre-fill with item quantity
+    handleOpen();  // Open the modal
+  };
 
   const capitalize = (str) => str.toUpperCase();
 
@@ -112,7 +128,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Add Item Modal */}
+      {/* Add/Edit Item Modal */}
       <div
         className={`fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50 ${open ? 'block' : 'hidden'}`}
       >
@@ -125,7 +141,9 @@ const HomePage = () => {
               <path d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
             </svg>
           </button>
-          <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-center text-gray-800">Add Item</h2>
+          <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-center text-gray-800">
+            {editMode ? "Edit Item" : "Add Item"}
+          </h2>
           <div className="flex flex-col gap-4">
             <input
               type="text"
@@ -133,6 +151,7 @@ const HomePage = () => {
               placeholder="Item"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
+              disabled={editMode} 
             />
             <input
               type="number"
@@ -145,7 +164,7 @@ const HomePage = () => {
               className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
               onClick={addItem}
             >
-              Add
+              {editMode ? "Save Changes" : "Add"}
             </button>
           </div>
         </div>
@@ -178,19 +197,26 @@ const HomePage = () => {
                     -
                   </button>
                 </div>
-                <button
-                  className="bg-red-700 text-sm text-white p-2 rounded-lg hover:bg-red-600"
-                  onClick={() => removeItem(item.name)}
-                >
-                  Remove
-                </button>
+                <div className="flex flex-col text-[12px] justify-between">
+                  <button
+                    className="bg-red-700 text-white p-2 rounded-lg hover:bg-red-600"
+                    onClick={() => removeItem(item.name)}
+                  >
+                    Remove
+                  </button>
+                  <button
+                    className="bg-blue-500 text-white p-2 mt-1 rounded-lg hover:bg-blue-600"
+                    onClick={() => handleEdit(item)}
+                  >
+                    Edit
+                  </button>
+                </div>  
               </div>
             </div>
           ))}
         </div>
       </div>
     </div>
-
   );
 };
 
