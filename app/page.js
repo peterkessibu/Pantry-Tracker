@@ -89,6 +89,9 @@ const HomePage = () => {
     setItemQuantity(item.quantity.toString());  // Pre-fill with item quantity
     handleOpen();  // Open the modal
   };
+  const getTotalItems = () => {
+    return inventory.reduce((total, item) => total + item.quantity, 0);
+  };
 
   const capitalize = (str) => str.toUpperCase();
 
@@ -214,6 +217,9 @@ const HomePage = () => {
               </div>
             </div>
           ))}
+        </div>
+        <div className="total-items">
+          <p className="text-lg font-bold">Total Items: {getTotalItems()}</p>
         </div>
       </div>
     </div>
