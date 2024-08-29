@@ -178,10 +178,13 @@ const HomePage = () => {
         <div className="bg-[#408d86] py-4 flex justify-center rounded-t-xl">
           <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-100">Inventory Items</h2>
         </div>
+        <div className="total-items m-4 items-end">
+          <p className="text-lg font-bold items-end">Total Items: {getTotalItems()}</p>
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4">
           {filteredInventory.map((item) => (
             <div key={item.name} className="bg-white border-2 border-[#408d86] rounded-lg shadow-lg p-4">
-              <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-800">{capitalize(item.name)}</h3>
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-800 capitalize">{(item.name)}</h3>
               <p className="text-gray-600 text-sm sm:text-base">Quantity: {item.quantity}</p>
               <div className="flex justify-between items-center mt-4">
                 <div className="flex gap-2 items-center">
@@ -218,10 +221,9 @@ const HomePage = () => {
             </div>
           ))}
         </div>
-        <div className="total-items">
-          <p className="text-lg font-bold">Total Items: {getTotalItems()}</p>
-        </div>
+        
       </div>
+      
     </div>
   );
 };
