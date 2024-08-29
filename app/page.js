@@ -150,7 +150,7 @@ const HomePage = () => {
           <div className="flex flex-col gap-4">
             <input
               type="text"
-              className="border-gray-300 p-2 rounded-lg"
+              className="border-gray-600 border-[1px] p-2 border-t-0 border-l-0 border-r-0"
               placeholder="Item"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
@@ -158,7 +158,7 @@ const HomePage = () => {
             />
             <input
               type="number"
-              className="border-gray-300 p-2 rounded-lg"
+              className="border-gray-600 border-[1px] p-2 border-t-0 border-l-0 border-r-0"
               placeholder="Quantity"
               value={itemQuantity}
               onChange={(e) => setItemQuantity(e.target.value)}
@@ -187,16 +187,16 @@ const HomePage = () => {
               <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-800 capitalize">{(item.name)}</h3>
               <p className="text-gray-600 text-sm sm:text-base">Quantity: {item.quantity}</p>
               <div className="flex justify-between items-center mt-4">
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-1 items-center">
                   <button
-                    className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition duration-300"
+                    className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#1e968c] transition duration-300 text-xs sm:text-sm md:text-base"
                     onClick={() => updateItemQuantity(item.name, item.quantity + 1)}
                   >
                     +
                   </button>
-                  <span className="text-gray-800 mx-2">{item.quantity}</span>
+                  <span className="text-slate-800 mx-2 sm:mx-3 text-xs sm:text-sm md:text-base">{item.quantity}</span>
                   <button
-                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition duration-300"
+                    className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#ff4646] transition duration-300 text-xs sm:text-sm md:text-base"
                     onClick={() => updateItemQuantity(item.name, item.quantity - 1)}
                     disabled={item.quantity === 0}
                   >
@@ -205,7 +205,7 @@ const HomePage = () => {
                 </div>
                 <div className="flex flex-col text-[12px] justify-between">
                   <button
-                    className="bg-red-700 text-white p-2 rounded-lg hover:bg-red-600"
+                    className="bg-red-700 text-white py-2 px-3 rounded-lg hover:bg-red-600"
                     onClick={() => removeItem(item.name)}
                   >
                     Remove
