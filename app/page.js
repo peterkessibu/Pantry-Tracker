@@ -150,7 +150,7 @@ const HomePage = () => {
           <div className="flex flex-col gap-4">
             <input
               type="text"
-              className="border-gray-600 border-[1px] p-2 border-t-0 border-l-0 border-r-0"
+              className="border-[#10423e] border-[1px] text-[#10423e] focus:outline-none focus:ring-2 focus:ring-[#408d86] focus:border-transparent placeholder:text-gray-600 p-2 border-t-0 border-l-0 border-r-0"
               placeholder="Item"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
@@ -158,7 +158,7 @@ const HomePage = () => {
             />
             <input
               type="number"
-              className="border-gray-600 border-[1px] p-2 border-t-0 border-l-0 border-r-0"
+              className="border-[#10423e] border-[1px] text-[#10423e] focus:outline-none focus:ring-2 focus:ring-[#408d86] focus:border-transparent placeholder:text-gray-600 p-2 border-t-0 border-l-0 border-r-0"
               placeholder="Quantity"
               value={itemQuantity}
               onChange={(e) => setItemQuantity(e.target.value)}
