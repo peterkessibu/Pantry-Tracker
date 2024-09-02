@@ -154,7 +154,6 @@ const HomePage = () => {
               placeholder="Item"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
-              disabled={editMode} 
             />
             <input
               type="number"
