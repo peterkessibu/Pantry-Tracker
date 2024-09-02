@@ -12,8 +12,12 @@ const HomePage = () => {
   const [itemQuantity, setItemQuantity] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSorted, setIsSorted] = useState(false);
-  const [editMode, setEditMode] = useState(false);  // New state for edit mode
-  const [editingItem, setEditingItem] = useState(null);  // New state for the item being edited
+  const [editMode, setEditMode] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [lastAddedItem, setLastAddedItem] = useState(null);
+  const [sortedMessageShown, setSortedMessageShown] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageOpen, setMessageOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -25,6 +29,8 @@ const HomePage = () => {
         ...doc.data(),
       }));
       setInventory(inventoryList);
+      setIsSorted(false);
+      setSortedMessageShown(false);
     });
 
     return () => unsubscribeInventory();
@@ -37,10 +43,11 @@ const HomePage = () => {
       await setDoc(docRef, {
         quantity: parseInt(itemQuantity),
       }, { merge: true });
+      setLastAddedItem(itemName);  // Track last added item
       setItemName('');
       setItemQuantity('');
-      setEditMode(false);  // Reset edit mode
-      setEditingItem(null);  // Clear editing item state
+      setEditMode(false);
+      setEditingItem(null);
       handleClose();
     } catch (error) {
       console.error("Error adding/editing item: ", error);
@@ -51,10 +58,13 @@ const HomePage = () => {
     try {
       const docRef = doc(db, 'inventory', item);
       await deleteDoc(docRef);
+      if (item === lastAddedItem) {
+        setLastAddedItem(null);  // Reset last added item if removed
+      }
     } catch (error) {
       console.error("Error removing item: ", error);
     }
-  }, []);
+  }, [lastAddedItem]);
 
   const updateItemQuantity = useCallback(async (itemName, newQuantity) => {
     try {
@@ -73,27 +83,75 @@ const HomePage = () => {
     const sortedInventory = [...filteredInventory].sort((a, b) => a.name.localeCompare(b.name));
     setInventory(sortedInventory);
     setIsSorted(true);
+    checkIfSorted(sortedInventory);
+  };
+
+  const checkIfSorted = (inventoryList) => {
+    const isSorted = inventoryList.every((item, index, arr) => {
+      return index === 0 || arr[index - 1].name.localeCompare(item.name) <= 0;
+    });
+    if (isSorted && !sortedMessageShown) {
+      setMessage("All items are sorted!");
+      setMessageOpen(true);
+      setSortedMessageShown(true);
+    }
   };
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setEditMode(false);  // Reset edit mode on close
-    setEditingItem(null);  // Clear editing item state on close
+    setEditMode(false);
+    setEditingItem(null);
   };
 
   const handleEdit = (item) => {
-    setEditMode(true);  // Enable edit mode
-    setEditingItem(item);  // Set the item to be edited
-    setItemName(item.name);  // Pre-fill with item name
-    setItemQuantity(item.quantity.toString());  // Pre-fill with item quantity
-    handleOpen();  // Open the modal
+    setEditMode(true);
+    setEditingItem(item);
+    setItemName(item.name);
+    setItemQuantity(item.quantity.toString());
+    handleOpen();
   };
+
   const getTotalItems = () => {
     return inventory.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const capitalize = (str) => str.toUpperCase();
+  useEffect(() => {
+    if (lastAddedItem && !isSorted) {
+      const index = inventory.findIndex(item => item.name === lastAddedItem);
+      if (index !== -1) {
+        const newInventory = [...inventory];
+        const [movedItem] = newInventory.splice(index, 1);
+        newInventory.push(movedItem);
+        setInventory(newInventory);
+      }
+    }
+  }, [lastAddedItem, isSorted, inventory]);
+
+  const handleMessageClose = () => {
+    setMessageOpen(false);
+    setMessage('');
+  };
+
+  const MessagePopup = ({ message, onClose }) => {
+    return (
+      <div className={`fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50 ${message ? 'block' : 'hidden'}`}>
+        <div className="bg-white rounded-xl shadow-lg flex flex-col gap-4 w-11/12 sm:w-3/4 md:w-1/2 lg:w-1/3 relative p-6">
+          <button
+            className="absolute top-2 right-2 bg-red-700 text-white p-2 rounded-full hover:bg-red-600"
+            onClick={onClose}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" x="0px" y="0px" width="15" height="15" viewBox="0 0 50 50">
+              <path d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
+            </svg>
+          </button>
+          <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-center text-gray-800">
+            {message}
+          </h2>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-5">
@@ -172,6 +230,9 @@ const HomePage = () => {
         </div>
       </div>
 
+      {/* Message Popup */}
+      <MessagePopup message={message} onClose={handleMessageClose} />
+
       {/* Inventory Items Section */}
       <div className="w-full p-3 sm:p-5 lg:p-8 rounded-xl border-[#10423e] shadow-lg bg-white mt-6 mx-2">
         <div className="bg-[#408d86] py-4 flex justify-center rounded-t-xl">
@@ -215,14 +276,12 @@ const HomePage = () => {
                   >
                     Edit
                   </button>
-                </div>  
+                </div>
               </div>
             </div>
           ))}
         </div>
-        
       </div>
-      
     </div>
   );
 };
