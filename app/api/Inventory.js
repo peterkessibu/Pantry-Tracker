@@ -1,17 +1,7 @@
-'use server'
-import { fetchInventoryFromDB, updateInventoryInDB } from '../../lib/db';
-import InventoryList from '../components/InventoryList';
+// pages/api/inventory.js
 
-export async function getServerSideProps() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/inventory`);
-    const inventory = await res.json();
+import { fetchInventoryFromDB, updateInventoryInDB } from '../lib/db';
 
-    return { props: { inventory } };
-}
-
-export default function InventoryPage({ inventory }) {
-    return <InventoryList inventory={inventory} />;
-}
 export default async function handler(req, res) {
     if (req.method === 'GET') {
         const inventory = await fetchInventoryFromDB();
