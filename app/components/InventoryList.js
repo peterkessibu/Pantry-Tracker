@@ -1,4 +1,4 @@
-'use  client'
+'use  server'
 import React from 'react';
 
 const InventoryList = ({ inventory, updateItemQuantity, removeItem, handleEdit, getTotalItems }) => {
