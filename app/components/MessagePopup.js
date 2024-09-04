@@ -9,19 +9,21 @@ const MessagePopup = ({ message, onClose }) => {
         const timeout = setTimeout(() => {
             setIsVisible(false);
             setTimeout(onClose, 500); // Delay closing after the animation
-        }, 2000);
+        }, 3500);
 
-        
+        // Clear timeout if the component unmounts early
         return () => clearTimeout(timeout);
     }, [onClose]);
 
     return (
         <div
-            className={`fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50 transition-opacity duration-500 ease-out ${isVisible ? 'opacity-100' : 'opacity-0'
+            className={`fixed bottom-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50 transition-opacity duration-350 ease-out ${isVisible ? 'opacity-100' : 'opacity-0'
                 }`}
         >
             <p>{message}</p>
-            
+            <button className="text-white ml-4" onClick={onClose}>
+                Close
+            </button>
         </div>
     );
 };

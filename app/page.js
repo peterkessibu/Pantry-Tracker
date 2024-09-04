@@ -1,17 +1,22 @@
+// app/page.js
+
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { db } from './firebase';
 import { collection, doc, setDoc, deleteDoc, onSnapshot, query } from 'firebase/firestore';
-import { Analytics } from "@vercel/analytics/react";
+import dynamic from 'next/dynamic';
+import debounce from 'lodash/debounce';
 import Header from './components/Header';
 import SearchBar from './components/SearchBar';
 import InventoryList from './components/InventoryList';
-import AddEditItemModal from './components/AddEditItemModal';
 import MessagePopup from './components/MessagePopup';
 
+// Lazy load AddEditItemModal to improve initial load performance
+const AddEditItemModal = dynamic(() => import('./components/AddEditItemModal'));
 
-const HomePage = () => {
+const Page = () => {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
@@ -34,6 +39,7 @@ const HomePage = () => {
         name: doc.id,
         ...doc.data(),
       }));
+      console.log('Inventory data:', inventoryList); // Debug log to check inventory data
       setInventory(inventoryList);
       setIsSorted(false);
       setSortedMessageShown(false);
@@ -81,9 +87,14 @@ const HomePage = () => {
     }
   }, []);
 
-  const filteredInventory = inventory.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Debounce search input to prevent too many re-renders
+  const debouncedSetSearchQuery = useMemo(() => debounce(setSearchQuery, 300), []);
+
+  const filteredInventory = useMemo(() => {
+    return inventory.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [inventory, searchQuery]);
 
   const sortItems = () => {
     const sortedInventory = [...filteredInventory].sort((a, b) => a.name.localeCompare(b.name));
@@ -118,9 +129,9 @@ const HomePage = () => {
     handleOpen();
   };
 
-  const getTotalItems = () => {
+  const getTotalItems = useMemo(() => {
     return inventory.reduce((total, item) => total + item.quantity, 0);
-  };
+  }, [inventory]);
 
   useEffect(() => {
     if (lastAddedItem && !isSorted) {
@@ -144,12 +155,10 @@ const HomePage = () => {
       {/* Title Section */}
       <Header title="Shelfsense" />
 
-      <Analytics />
-
       {/* Search Input */}
       <SearchBar
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={debouncedSetSearchQuery} // Use debounced function for performance
         onAddClick={handleOpen}
         onSortClick={sortItems}
       />
@@ -172,15 +181,19 @@ const HomePage = () => {
       {messageOpen && <MessagePopup message={message} onClose={handleMessageClose} />}
 
       {/* Inventory Items Section */}
-      <InventoryList
-        inventory={filteredInventory}
-        updateItemQuantity={updateItemQuantity}
-        removeItem={removeItem}
-        handleEdit={handleEdit}
-        getTotalItems={getTotalItems}
-      />
+      {filteredInventory.length > 0 ? (
+        <InventoryList
+          inventory={filteredInventory}
+          updateItemQuantity={updateItemQuantity}
+          removeItem={removeItem}
+          handleEdit={handleEdit}
+          getTotalItems={getTotalItems}
+        />
+      ) : (
+        <p className="text-gray-500">No items found. Add new items to your inventory.</p>
+      )}
     </div>
   );
 };
 
-export default HomePage;
+export default Page;
