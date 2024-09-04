@@ -1,4 +1,4 @@
-// pages/api/inventory.js
+'use server'
 import { fetchInventoryFromDB, updateInventoryInDB } from '../../lib/db';
 import InventoryList from '../components/InventoryList';
 
