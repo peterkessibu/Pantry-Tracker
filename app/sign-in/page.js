@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import AuthPage from '../components/AuthPage';
 
 const SignIn = () => {

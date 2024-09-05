@@ -1,14 +1,15 @@
-// components/AuthPage.js
-'use client'
+'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';  // Correct import for Next.js 13
 import { auth, googleProvider } from '../firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 const AuthPage = ({ isSignUp }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const router = useRouter();  // Make sure useRouter is used here
 
     const handleEmailChange = (e) => setEmail(e.target.value);
     const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -23,6 +24,7 @@ const AuthPage = ({ isSignUp }) => {
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
             }
+            router.push('/generate');  // Redirect to the generate page
         } catch (err) {
             setError(err.message);
         }
@@ -31,6 +33,7 @@ const AuthPage = ({ isSignUp }) => {
     const handleGoogleSignIn = async () => {
         try {
             await signInWithPopup(auth, googleProvider);
+            router.push('/generate');  // Redirect to the generate page
         } catch (err) {
             setError(err.message);
         }
