@@ -1,15 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';  // Correct import for Next.js 13
-import { auth, googleProvider } from '../firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { auth, googleProvider } from '../firebase'; // Import the necessary Firebase functions
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import useAuth from '../hooks/useAuth'; // Assuming you have a custom hook for auth
 
 const AuthPage = ({ isSignUp }) => {
+    const { user } = useAuth(); // Get user from auth hook
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const router = useRouter();  // Make sure useRouter is used here
+    const router = useRouter();
+
+    useEffect(() => {
+        if (user) {
+            router.push('/generate'); // Redirect to the generate page if already signed in
+        }
+    }, [user, router]);
 
     const handleEmailChange = (e) => setEmail(e.target.value);
     const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -19,12 +28,16 @@ const AuthPage = ({ isSignUp }) => {
         setError('');
 
         try {
+            let userCredential;
             if (isSignUp) {
-                await createUserWithEmailAndPassword(auth, email, password);
+                userCredential = await createUserWithEmailAndPassword(auth, email, password);
             } else {
-                await signInWithEmailAndPassword(auth, email, password);
+                userCredential = await signInWithEmailAndPassword(auth, email, password);
             }
-            router.push('/generate');  // Redirect to the generate page
+
+            const user = userCredential.user;
+            await setUserData(user); // Save user data to Firestore
+            router.push('/generate'); // Redirect to the generate page
         } catch (err) {
             setError(err.message);
         }
@@ -32,12 +45,30 @@ const AuthPage = ({ isSignUp }) => {
 
     const handleGoogleSignIn = async () => {
         try {
-            await signInWithPopup(auth, googleProvider);
-            router.push('/generate');  // Redirect to the generate page
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            await setUserData(user); // Save user data to Firestore
+            router.push('/generate'); // Redirect to the generate page
         } catch (err) {
             setError(err.message);
         }
     };
+
+    const setUserData = async (user) => {
+        try {
+            const userRef = doc(db, `users/${user.uid}`);
+            await setDoc(userRef, {
+                email: user.email,
+                // Add other user-specific data here
+            });
+        } catch (err) {
+            console.error("Error saving user data:", err.message);
+        }
+    };
+
+    if (user) {
+        return <p>Redirecting...</p>; // Optionally show a loading state or redirecting message
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
