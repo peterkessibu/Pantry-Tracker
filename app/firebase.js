@@ -1,22 +1,21 @@
-
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
   // your firebase config here
   const firebaseConfig = {
-    apiKey: "AIzaSyAcpxMMR7qTwvgkpjKTOVRxQiFGA43gg1k",
-    authDomain: "stockup-f1411.firebaseapp.com",
-    projectId: "stockup-f1411",
-    storageBucket: "stockup-f1411.appspot.com",
-    messagingSenderId: "447366001531",
-    appId: "1:447366001531:web:55583c77224e4af0a5c3de",
-    measurementId: "G-H8EL5XDDGW"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   };
-
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
   
-  export { auth, db };
+  export const googleProvider = new GoogleAuthProvider();
+  export { auth, db, app };
