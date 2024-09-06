@@ -2,15 +2,14 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { db } from '../firebase';
-import { collection, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { deleteDoc, doc } from 'firebase/firestore';
 import dynamic from 'next/dynamic';
 import debounce from 'lodash/debounce';
 import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import InventoryList from '../components/InventoryList';
 import MessagePopup from '../components/MessagePopup';
-import useAuth from '../hooks/useAuth'; 
+import useAuth from '../hooks/useAuth';
 import usePantry from '../hooks/usePantry';
 
 const AddEditItemModal = dynamic(() => import('../components/AddEditItemModal'));
@@ -28,55 +27,67 @@ const Page = () => {
     const [sortedMessageShown, setSortedMessageShown] = useState(false);
     const [message, setMessage] = useState('');
     const [messageOpen, setMessageOpen] = useState(false);
-    const { user } = useAuth(); 
+    const { user } = useAuth();
     const { addPantryItem, getPantryItems } = usePantry(user?.uid);
 
     const router = useRouter();
 
+    // Fetch inventory items on component load
     useEffect(() => {
         if (user) {
             const fetchInventory = async () => {
-                // Function to fetch user's inventory from Firestore
-                const items = await getPantryItems(user.uid);
-                setInventory(items);
-                setIsSorted(false);
-                setSortedMessageShown(false);
+                try {
+                    const items = await getPantryItems(user.uid);
+                    setInventory(items);
+                    setIsSorted(false);
+                    setSortedMessageShown(false);
+                } catch (error) {
+                    console.error("Error fetching pantry items: ", error);
+                }
             };
 
             fetchInventory();
         }
-    }, [user]);
+    }, [user, getPantryItems]);
 
+    // Open modal for adding new item
     const handleOpen = () => {
         setEditMode(false);
         setOpen(true);
     };
 
+    // Close the modal and reset fields
     const handleClose = () => {
         setOpen(false);
         setItemName('');
         setItemQuantity('');
     };
 
+    // Add new item to Firestore and update UI
     const addItem = useCallback(async () => {
-        if (!itemName || !itemQuantity || !user) return;
+        if (!itemName || !itemQuantity || !user) return; // Ensure all required fields are present
         try {
-            await addPantryItem(user.uid, itemName, parseInt(itemQuantity)); // Add item to the user's pantry
+            const docRef = await addPantryItem(user.uid, itemName, parseInt(itemQuantity));
+            setInventory(prev => [
+                ...prev,
+                { id: docRef.id, name: itemName, quantity: parseInt(itemQuantity) }  // Use docRef.id here
+            ]);
             setLastAddedItem(itemName); // Track last added item
-            setItemName('');
+            setItemName('');  // Reset form
             setItemQuantity('');
-            setEditMode(false);
-            setEditingItem(null);
-            handleClose();
+            setOpen(false);   // Close modal
         } catch (error) {
-            console.error("Error adding/editing item: ", error);
+            console.error('Error adding item:', error);
         }
     }, [itemName, itemQuantity, user]);
 
+
+    // Remove item from Firestore
     const removeItem = useCallback(async (itemId) => {
         try {
             const docRef = doc(db, 'users', user?.uid || '', 'inventory', itemId);
             await deleteDoc(docRef);
+            setInventory(prev => prev.filter(item => item.id !== itemId)); // Remove from UI
             if (itemId === lastAddedItem) {
                 setLastAddedItem(null); // Reset last added item if removed
             }
@@ -85,15 +96,7 @@ const Page = () => {
         }
     }, [lastAddedItem, user]);
 
-    const updateItemQuantity = useCallback(async (itemName, newQuantity) => {
-        try {
-            const docRef = doc(db, 'users', user?.uid || '', 'inventory', itemName);
-            await setDoc(docRef, { quantity: newQuantity }, { merge: true });
-        } catch (error) {
-            console.error("Error updating item quantity: ", error);
-        }
-    }, [user]);
-
+    // Sort items alphabetically
     const sortItems = () => {
         const sortedInventory = [...inventory].sort((a, b) =>
             a.name.localeCompare(b.name)
@@ -105,6 +108,7 @@ const Page = () => {
         setMessageOpen(true);
     };
 
+    // Handle message popup close
     const handleMessageClose = () => {
         setMessageOpen(false);
         setSortedMessageShown(false);

@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react';
-import { getPantryItems, addPantryItem, updateItemQuantity, removeItem } from '../components/InventoryList';
+import { db } from '../firebase';
+import { collection, getDocs, updateDoc, doc, deleteDoc, setDoc } from 'firebase/firestore';
 
+// Function to add a new pantry item with a custom document ID
+export const addPantryItem = async (userId, itemName, quantity) => {
+    const collectionRef = collection(db, 'users', userId, 'inventory');
+    const newDocRef = doc(collectionRef);  // Create a new document reference with a generated ID
+    await setDoc(newDocRef, {
+        name: itemName,
+        quantity: quantity
+    });
+    return newDocRef.id;  // Return the new document's ID
+};
+
+// Custom hook to manage pantry items
 const usePantry = (userId) => {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -8,9 +21,10 @@ const usePantry = (userId) => {
 
     useEffect(() => {
         const fetchItems = async () => {
+            if (!userId) return;  // Ensure userId is provided
             setLoading(true);
             try {
-                const fetchedItems = await getPantry(userId);
+                const fetchedItems = await getPantryItems(userId);
                 setItems(fetchedItems);
             } catch (err) {
                 setError(err);
@@ -18,25 +32,38 @@ const usePantry = (userId) => {
                 setLoading(false);
             }
         };
-
         fetchItems();
     }, [userId]);
 
+    // Fetch pantry items from Firestore
+    const getPantryItems = async (userId) => {
+        const collectionRef = collection(db, 'users', userId, 'inventory');
+        const querySnapshot = await getDocs(collectionRef);
+        const items = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+        return items;
+    };
+
+    // Add a new item to the pantry using the custom `addPantryItem` function
     const handleAddItem = async (itemName, quantity) => {
         try {
-            await addPantryItem(userId, itemName, quantity);
-            setItems(prevItems => [...prevItems, { name: itemName, quantity }]);
+            const itemId = await addPantryItem(userId, itemName, quantity);
+            setItems(prevItems => [...prevItems, { id: itemId, name: itemName, quantity }]);
         } catch (err) {
             setError(err);
         }
     };
 
-    const handleUpdateItem = async (itemName, quantity) => {
+    // Update the quantity of an existing item
+    const handleUpdateItem = async (itemId, quantity) => {
         try {
-            await updateItemQuantity(userId, itemName, quantity);
+            const itemRef = doc(db, 'users', userId, 'inventory', itemId);
+            await updateDoc(itemRef, { quantity });
             setItems(prevItems =>
                 prevItems.map(item =>
-                    item.name === itemName ? { ...item, quantity } : item
+                    item.id === itemId ? { ...item, quantity } : item
                 )
             );
         } catch (err) {
@@ -44,10 +71,12 @@ const usePantry = (userId) => {
         }
     };
 
-    const handleRemoveItem = async (itemName) => {
+    // Remove an item from the pantry
+    const handleRemoveItem = async (itemId) => {
         try {
-            await removeItem(userId, itemName);
-            setItems(prevItems => prevItems.filter(item => item.name !== itemName));
+            const itemRef = doc(db, 'users', userId, 'inventory', itemId);
+            await deleteDoc(itemRef);
+            setItems(prevItems => prevItems.filter(item => item.id !== itemId));
         } catch (err) {
             setError(err);
         }
@@ -59,7 +88,7 @@ const usePantry = (userId) => {
         error,
         addPantryItem: handleAddItem,
         updateItemQuantity: handleUpdateItem,
-        removeItem: handleRemoveItem
+        removeItem: handleRemoveItem,
     };
 };
 
