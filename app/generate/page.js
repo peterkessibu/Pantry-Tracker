@@ -10,7 +10,8 @@ import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import InventoryList from '../components/InventoryList';
 import MessagePopup from '../components/MessagePopup';
-import useAuth from '../hooks/useAuth'; // Correct import of useAuth
+import useAuth from '../hooks/useAuth'; 
+import usePantry from '../hooks/usePantry';
 
 const AddEditItemModal = dynamic(() => import('../components/AddEditItemModal'));
 
@@ -27,7 +28,8 @@ const Page = () => {
     const [sortedMessageShown, setSortedMessageShown] = useState(false);
     const [message, setMessage] = useState('');
     const [messageOpen, setMessageOpen] = useState(false);
-    const { user } = useAuth(); // Now calling the hook inside the component
+    const { user } = useAuth(); 
+    const { addPantryItem, getPantryItems } = usePantry(user?.uid);
 
     const router = useRouter();
 

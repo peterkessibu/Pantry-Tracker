@@ -10,7 +10,7 @@ const usePantry = (userId) => {
         const fetchItems = async () => {
             setLoading(true);
             try {
-                const fetchedItems = await getPantryItems(userId);
+                const fetchedItems = await getPantry(userId);
                 setItems(fetchedItems);
             } catch (err) {
                 setError(err);
