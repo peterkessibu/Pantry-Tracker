@@ -1,9 +1,6 @@
-'use server';
-
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
-import { getDatabase, ref, set, get } from 'firebase/database';
 
 // Your Firebase config here
 const firebaseConfig = {
@@ -20,7 +17,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const database = getDatabase(app); // Initialize Realtime Database
 
 // Firestore Functions
 export const saveUserDataFirestore = async () => {
@@ -47,31 +43,5 @@ export const getUserDataFirestore = async () => {
   }
 };
 
-// Realtime Database Functions
-export const saveUserDataRealtime = async () => {
-  const user = auth.currentUser;
-  if (user) {
-    const userRef = ref(database, `users/${user.uid}`);
-    await set(userRef, {
-      name: user.displayName,
-      email: user.email,
-    });
-  }
-};
-
-export const getUserDataRealtime = async () => {
-  const user = auth.currentUser;
-  if (user) {
-    const userRef = ref(database, `users/${user.uid}`);
-    const snapshot = await get(userRef);
-    if (snapshot.exists()) {
-      console.log("User data:", snapshot.val());
-    } else {
-      console.log("No data available");
-    }
-  }
-};
-
 export const googleProvider = new GoogleAuthProvider();
-export { auth, db, app, database };
-
+export { auth, db, app };

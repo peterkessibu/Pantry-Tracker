@@ -5,7 +5,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center">
       <h1 className="text-4xl font-bold mb-6">Welcome to ShelfSense</h1>
-      <p className="text-lg text-gray-600 mb-12 text-center">
+      <p className="text-lg text-gray-800 mb-12 text-center">
         Easily track and manage your inventory with real-time updates. Sign up or sign in to get started.
       </p>
       <div className="space-x-4">

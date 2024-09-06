@@ -1,27 +1,34 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth, googleProvider } from '../firebase'; // Import the necessary Firebase functions
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import useAuth from '../hooks/useAuth'; // Assuming you have a custom hook for auth
+import { auth, googleProvider, db } from '../firebase'; // Import Firestore and Firebase
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore'; // Import Firestore functions
+import Link from 'next/link';
 
 const AuthPage = ({ isSignUp }) => {
-    const { user } = useAuth(); // Get user from auth hook
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const router = useRouter();
-
-    useEffect(() => {
-        if (user) {
-            router.push('/generate'); // Redirect to the generate page if already signed in
-        }
-    }, [user, router]);
-
+    const router = useRouter(); 
     const handleEmailChange = (e) => setEmail(e.target.value);
     const handlePasswordChange = (e) => setPassword(e.target.value);
+
+    // Function to create a new user in Firestore
+    const createFirestoreUser = async (user) => {
+        const userDocRef = doc(db, 'users', user.uid); // Reference to user's Firestore document
+        const userDoc = await getDoc(userDocRef);
+
+        // Check if user already exists in Firestore
+        if (!userDoc.exists()) {
+            await setDoc(userDocRef, {
+                email: user.email,
+                createdAt: new Date(),
+                inventory: [] // Initialize empty inventory
+            });
+        }
+    };
 
     const handleAuth = async (e) => {
         e.preventDefault();
@@ -35,9 +42,10 @@ const AuthPage = ({ isSignUp }) => {
                 userCredential = await signInWithEmailAndPassword(auth, email, password);
             }
 
-            const user = userCredential.user;
-            await setUserData(user); // Save user data to Firestore
-            router.push('/generate'); // Redirect to the generate page
+            const user = userCredential.user; // Get the authenticated user
+            await createFirestoreUser(user); // Create or retrieve user document in Firestore
+
+            router.push('/generate'); // Redirect to generate page after successful auth
         } catch (err) {
             setError(err.message);
         }
@@ -46,29 +54,15 @@ const AuthPage = ({ isSignUp }) => {
     const handleGoogleSignIn = async () => {
         try {
             const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-            await setUserData(user); // Save user data to Firestore
-            router.push('/generate'); // Redirect to the generate page
+            const user = result.user; // Get Google authenticated user
+
+            await createFirestoreUser(user); // Create or retrieve user document in Firestore
+
+            router.push('/generate'); // Redirect to generate page
         } catch (err) {
             setError(err.message);
         }
     };
-
-    const setUserData = async (user) => {
-        try {
-            const userRef = doc(db, `users/${user.uid}`);
-            await setDoc(userRef, {
-                email: user.email,
-                // Add other user-specific data here
-            });
-        } catch (err) {
-            console.error("Error saving user data:", err.message);
-        }
-    };
-
-    if (user) {
-        return <p>Redirecting...</p>; // Optionally show a loading state or redirecting message
-    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -118,15 +112,15 @@ const AuthPage = ({ isSignUp }) => {
                         onClick={handleGoogleSignIn}
                         className="w-full mt-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                     >
-                        Sign in with Google
+                        {isSignUp ? 'Sign up with Google' : 'Sign in with Google'}
                     </button>
                 </div>
 
                 <p className="text-gray-600 text-center mt-6">
                     {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-                    <a href={isSignUp ? '/signin' : '/signup'} className="text-blue-500 hover:underline">
+                    <Link href={isSignUp ? '/sign-in' : '/sign-up'} className="text-blue-500 hover:underline">
                         {isSignUp ? 'Sign In' : 'Sign Up'}
-                    </a>
+                    </Link>
                 </p>
             </div>
         </div>
