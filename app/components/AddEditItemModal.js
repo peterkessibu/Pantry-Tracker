@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React from 'react';
 
 const AddEditItemModal = ({
@@ -12,7 +12,7 @@ const AddEditItemModal = ({
     handleClose
 }) => {
     if (!open) return null;
-    else return (
+    return (
         <div
             className={`fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50 ${open ? 'block' : 'hidden'}`}
         >
@@ -52,9 +52,7 @@ const AddEditItemModal = ({
                 </div>
             </div>
         </div>
-
-    )
-   
+    );
 };
 
 export default AddEditItemModal;
