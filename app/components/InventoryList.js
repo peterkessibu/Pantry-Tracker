@@ -1,7 +1,6 @@
-'use client';
 import React, { useState } from 'react';
-import usePantry from '../hooks/usePantry'; // Adjust the import path as needed
-import AddEditItemModal from './AddEditItemModal'; // Import the updated modal component
+import usePantry from '../hooks/usePantry';
+import AddEditItemModal from './AddEditItemModal';
 
 const InventoryList = ({ userId }) => {
     const { items, loading, error, addPantryItem, updateItemQuantity, removeItem } = usePantry(userId);
@@ -20,15 +19,25 @@ const InventoryList = ({ userId }) => {
     };
 
     const handleSave = async () => {
-        if (editMode) {
-            await updateItemQuantity(itemName, parseInt(itemQuantity));
-        } else {
-            await addPantryItem(itemName, parseInt(itemQuantity));
+        try {
+            if (editMode) {
+                await updateItemQuantity(selectedItem.id, parseInt(itemQuantity));
+            } else {
+                const newItem = await addPantryItem(userId, itemName, parseInt(itemQuantity));
+                console.log('New item added:', newItem);
+
+                // Update the local state with the new item
+                setItems((prevItems) => [...prevItems, newItem]); // <-- This updates the state with the new item
+            }
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error saving item:', error);
         }
-        handleCloseModal();
     };
 
+
     const handleEdit = (item) => {
+        setSelectedItem(item);
         setItemName(item.name);
         setItemQuantity(item.quantity);
         setEditMode(true);
@@ -52,14 +61,14 @@ const InventoryList = ({ userId }) => {
                             <div className="flex gap-1 items-center">
                                 <button
                                     className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#1e968c] transition duration-300 text-xs sm:text-sm md:text-base"
-                                    onClick={() => updateItemQuantity(item.name, item.quantity + 1)}
+                                    onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
                                 >
                                     +
                                 </button>
                                 <span className="text-slate-800 mx-2 sm:mx-3 text-xs sm:text-sm md:text-base">{item.quantity}</span>
                                 <button
                                     className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#ff4646] transition duration-300 text-xs sm:text-sm md:text-base"
-                                    onClick={() => updateItemQuantity(item.name, item.quantity - 1)}
+                                    onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
                                     disabled={item.quantity === 0}
                                 >
                                     -
@@ -68,7 +77,7 @@ const InventoryList = ({ userId }) => {
                             <div className="flex flex-col text-[12px] justify-between">
                                 <button
                                     className="bg-red-700 text-white py-2 px-3 rounded-lg hover:bg-red-600"
-                                    onClick={() => removeItem(item.name)}
+                                    onClick={() => removeItem(item.id)}
                                 >
                                     Remove
                                 </button>
@@ -84,7 +93,6 @@ const InventoryList = ({ userId }) => {
                 ))}
             </div>
 
-            {/* Add/Edit Item Modal */}
             <AddEditItemModal
                 open={isModalOpen}
                 itemName={itemName}

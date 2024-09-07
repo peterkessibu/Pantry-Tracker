@@ -1,5 +1,5 @@
 // pages/inventory.js
-'use server';
+
 import InventoryList from '../components/InventoryList';
 
 export async function getServerSideProps() {

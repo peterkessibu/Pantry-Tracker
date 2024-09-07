@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteDoc, doc  } from 'firebase/firestore';
 import dynamic from 'next/dynamic';
 import debounce from 'lodash/debounce';
 import Header from '../components/Header';
@@ -63,23 +63,23 @@ const Page = () => {
         setItemQuantity('');
     };
 
-    // Add new item to Firestore and update UI
     const addItem = useCallback(async () => {
-        if (!itemName || !itemQuantity || !user) return; // Ensure all required fields are present
+        if (!itemName || !itemQuantity || !user) {
+            console.error('Missing required fields or user not authenticated');
+            return;
+        }
         try {
-            const docRef = await addPantryItem(user.uid, itemName, parseInt(itemQuantity));
-            setInventory(prev => [
-                ...prev,
-                { id: docRef.id, name: itemName, quantity: parseInt(itemQuantity) }  // Use docRef.id here
-            ]);
-            setLastAddedItem(itemName); // Track last added item
-            setItemName('');  // Reset form
+            const newItem = await addPantryItem(itemName, parseInt(itemQuantity));
+            console.log('New item added:', newItem);
+            setLastAddedItem(itemName);
+            setItemName('');
             setItemQuantity('');
-            setOpen(false);   // Close modal
+            setOpen(false);
         } catch (error) {
             console.error('Error adding item:', error);
+            // Optionally, set an error state here to display to the user
         }
-    }, [itemName, itemQuantity, user]);
+    }, [itemName, itemQuantity, user, addPantryItem]);
 
 
     // Remove item from Firestore

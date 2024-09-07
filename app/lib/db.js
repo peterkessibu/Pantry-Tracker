@@ -2,13 +2,6 @@
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db } from "./firebase";
 
-export async function fetchInventoryFromDB() {
-    const inventoryCollection = collection(db, "inventory");
-    const inventorySnapshot = await getDocs(inventoryCollection);
-    const inventory = inventorySnapshot.docs.map((doc) => doc.data());
-    return inventory;
-}
-
 export async function updateInventoryInDB(itemName, newQuantity) {
     const inventoryCollection = collection(db, "inventory");
     const inventorySnapshot = await getDocs(inventoryCollection);
@@ -16,6 +9,14 @@ export async function updateInventoryInDB(itemName, newQuantity) {
 
     if (itemDoc) {
         const itemRef = doc(db, "inventory", itemDoc.id);
-        await updateDoc(itemRef, { quantity: newQuantity });
+        try {
+            await updateDoc(itemRef, { quantity: newQuantity });
+        } catch (error) {
+            console.error(`Error updating document: ${error}`);
+            throw error; // Re-throw the error to be handled by the caller
+        }
+    } else {
+        console.error(`No document found with name: ${itemName}`);
+        throw new Error(`Item ${itemName} not found in inventory`);
     }
 }
