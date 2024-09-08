@@ -21,9 +21,6 @@ const MessagePopup = ({ message, onClose }) => {
                 }`}
         >
             <p>{message}</p>
-            <button className="text-white ml-4" onClick={onClose}>
-                Close
-            </button>
         </div>
     );
 };

@@ -1,14 +1,45 @@
-// pages/inventory.js
+// pages/InventoryPage.js
+'use client';
 
+import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/router';
+import { auth } from '../firebase';
 import InventoryList from '../components/InventoryList';
+import usePantry from '../hooks/usePantry';
 
-export async function getServerSideProps() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_FIREBASE_API_URL}/api/inventory`);
-    const inventory = await res.json();
+export default function InventoryPage() {
+    const [userId, setUserId] = useState(null);
+    const router = useRouter();
+    const { items, loading, error, addPantryItem, updateItemQuantity, removeItem } = usePantry(userId);
 
-    return { props: { inventory } };
-}
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                setUserId(user.uid);
+            } else {
+                router.push('/page'); 
+            }
+        });
 
-export default function InventoryPage({ inventory }) {
-    return <InventoryList inventory={inventory} />;
+        // Cleanup on component unmount
+        return () => unsubscribe();
+    }, [router]);
+
+    if (!userId || loading) {
+        return <div>Loading...</div>; 
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+
+    return (
+        <InventoryList
+            userId={userId}
+            items={items}
+            updateItemQuantity={updateItemQuantity}
+            removeItem={removeItem}
+            addPantryItem={addPantryItem}
+        />
+    );
 }

@@ -1,9 +1,10 @@
+// components/InventoryList.js
+'use client';
+
 import React, { useState } from 'react';
-import usePantry from '../hooks/usePantry';
 import AddEditItemModal from './AddEditItemModal';
 
-const InventoryList = ({ userId }) => {
-    const { items, loading, error, addPantryItem, updateItemQuantity, removeItem } = usePantry(userId);
+const InventoryList = ({ userId, items, updateItemQuantity, removeItem, addPantryItem }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [itemName, setItemName] = useState('');
@@ -23,18 +24,14 @@ const InventoryList = ({ userId }) => {
             if (editMode) {
                 await updateItemQuantity(selectedItem.id, parseInt(itemQuantity));
             } else {
-                const newItem = await addPantryItem(userId, itemName, parseInt(itemQuantity));
+                const newItem = await addPantryItem(itemName, parseInt(itemQuantity));
                 console.log('New item added:', newItem);
-
-                // Update the local state with the new item
-                setItems((prevItems) => [...prevItems, newItem]); // <-- This updates the state with the new item
             }
             handleCloseModal();
         } catch (error) {
             console.error('Error saving item:', error);
         }
     };
-
 
     const handleEdit = (item) => {
         setSelectedItem(item);
@@ -44,8 +41,9 @@ const InventoryList = ({ userId }) => {
         setIsModalOpen(true);
     };
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error.message}</p>;
+    if (!items.length) {
+        return <p className="text-gray-500">No items found. Add new items to your inventory.</p>;
+    }
 
     return (
         <div className="w-full p-3 sm:p-5 lg:p-8 rounded-xl border-[#10423e] shadow-lg bg-white mt-6 mx-2">
@@ -76,13 +74,13 @@ const InventoryList = ({ userId }) => {
                             </div>
                             <div className="flex flex-col text-[12px] justify-between">
                                 <button
-                                    className="bg-red-700 text-white py-2 px-3 rounded-lg hover:bg-red-600"
+                                    className="bg-[#cf2f2f] text-white py-2 px-3 rounded-lg hover:bg-[#c02828]"
                                     onClick={() => removeItem(item.id)}
                                 >
                                     Remove
                                 </button>
                                 <button
-                                    className="bg-blue-500 text-white p-2 mt-1 rounded-lg hover:bg-blue-600"
+                                    className="bg-[#408d86] text-white py-2 px-3 rounded-lg hover:bg-[#298b83] mt-2"
                                     onClick={() => handleEdit(item)}
                                 >
                                     Edit
@@ -92,17 +90,17 @@ const InventoryList = ({ userId }) => {
                     </div>
                 ))}
             </div>
-
-            <AddEditItemModal
-                open={isModalOpen}
-                itemName={itemName}
-                setItemName={setItemName}
-                itemQuantity={itemQuantity}
-                setItemQuantity={setItemQuantity}
-                editMode={editMode}
-                addItem={handleSave}
-                handleClose={handleCloseModal}
-            />
+            {isModalOpen && (
+                <AddEditItemModal
+                    itemName={itemName}
+                    itemQuantity={itemQuantity}
+                    setItemName={setItemName}
+                    setItemQuantity={setItemQuantity}
+                    onSave={handleSave}
+                    onClose={handleCloseModal}
+                    editMode={editMode}
+                />
+            )}
         </div>
     );
 };

@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { deleteDoc, doc  } from 'firebase/firestore';
+import { deleteDoc, doc } from 'firebase/firestore';
 import dynamic from 'next/dynamic';
 import debounce from 'lodash/debounce';
-import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import InventoryList from '../components/InventoryList';
 import MessagePopup from '../components/MessagePopup';
+import Navbar from '../components/NavBar'
 import useAuth from '../hooks/useAuth';
 import usePantry from '../hooks/usePantry';
+
 
 const AddEditItemModal = dynamic(() => import('../components/AddEditItemModal'));
 
@@ -132,10 +133,24 @@ const Page = () => {
     };
 
     const getTotalItems = () => inventory.length;
+    const updateItemQuantity = async (itemId, newQuantity) => {
+        try {
+            // Assuming you have a function to update an item in Firestore
+            await updatePantryItemQuantity(itemId, newQuantity);
+            // Update local state
+            setInventory(prev =>
+                prev.map(item =>
+                    item.id === itemId ? { ...item, quantity: newQuantity } : item
+                )
+            );
+        } catch (error) {
+            console.error("Error updating item quantity: ", error);
+        }
+    };
 
     return (
         <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-5">
-            <Header title="ShelfSense" />
+            <Navbar/>
             <SearchBar
                 searchQuery={searchQuery}
                 setSearchQuery={debouncedSetSearchQuery}
@@ -157,6 +172,7 @@ const Page = () => {
             {messageOpen && <MessagePopup message={message} onClose={handleMessageClose} />}
             {filteredInventory.length > 0 ? (
                 <InventoryList
+                    items={inventory}
                     inventory={filteredInventory}
                     updateItemQuantity={updateItemQuantity}
                     removeItem={removeItem}
