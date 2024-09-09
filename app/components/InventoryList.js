@@ -1,10 +1,10 @@
-// components/InventoryList.js
 'use client';
 
 import React, { useState } from 'react';
 import AddEditItemModal from './AddEditItemModal';
 
-const InventoryList = ({ userId, items, updateItemQuantity, removeItem, addPantryItem }) => {
+
+const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [itemName, setItemName] = useState('');
@@ -21,11 +21,10 @@ const InventoryList = ({ userId, items, updateItemQuantity, removeItem, addPantr
 
     const handleSave = async () => {
         try {
-            if (editMode) {
+            if (editMode && selectedItem) {
                 await updateItemQuantity(selectedItem.id, parseInt(itemQuantity));
             } else {
-                const newItem = await addPantryItem(itemName, parseInt(itemQuantity));
-                console.log('New item added:', newItem);
+                await addPantryItem(itemName, parseInt(itemQuantity));
             }
             handleCloseModal();
         } catch (error) {
@@ -36,9 +35,15 @@ const InventoryList = ({ userId, items, updateItemQuantity, removeItem, addPantr
     const handleEdit = (item) => {
         setSelectedItem(item);
         setItemName(item.name);
-        setItemQuantity(item.quantity);
+        setItemQuantity(item.quantity.toString());
         setEditMode(true);
         setIsModalOpen(true);
+    };
+
+    const handleQuantityChange = async (itemId, newQuantity) => {
+        if (newQuantity >= 0) {
+            await updateItemQuantity(itemId, newQuantity);
+        }
     };
 
     if (!items.length) {
@@ -59,14 +64,14 @@ const InventoryList = ({ userId, items, updateItemQuantity, removeItem, addPantr
                             <div className="flex gap-1 items-center">
                                 <button
                                     className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#1e968c] transition duration-300 text-xs sm:text-sm md:text-base"
-                                    onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                                    onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                                 >
                                     +
                                 </button>
                                 <span className="text-slate-800 mx-2 sm:mx-3 text-xs sm:text-sm md:text-base">{item.quantity}</span>
                                 <button
                                     className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#ff4646] transition duration-300 text-xs sm:text-sm md:text-base"
-                                    onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                                    onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                                     disabled={item.quantity === 0}
                                 >
                                     -
@@ -92,13 +97,15 @@ const InventoryList = ({ userId, items, updateItemQuantity, removeItem, addPantr
             </div>
             {isModalOpen && (
                 <AddEditItemModal
+                    open={isModalOpen}
                     itemName={itemName}
                     itemQuantity={itemQuantity}
                     setItemName={setItemName}
                     setItemQuantity={setItemQuantity}
-                    onSave={handleSave}
-                    onClose={handleCloseModal}
                     editMode={editMode}
+                    addItem={handleSave}
+                    handleClose={handleCloseModal}
+                    updateItemQuantity={updateItemQuantity}
                 />
             )}
         </div>

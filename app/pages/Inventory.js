@@ -1,11 +1,11 @@
-// pages/InventoryPage.js
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { auth } from '../firebase';
 import InventoryList from '../components/InventoryList';
 import usePantry from '../hooks/usePantry';
+import { db } from '../firebase';
 
 export default function InventoryPage() {
     const [userId, setUserId] = useState(null);
@@ -17,16 +17,15 @@ export default function InventoryPage() {
             if (user) {
                 setUserId(user.uid);
             } else {
-                router.push('/page'); 
+                router.push('/page');
             }
         });
 
-        // Cleanup on component unmount
         return () => unsubscribe();
     }, [router]);
 
     if (!userId || loading) {
-        return <div>Loading...</div>; 
+        return <div>Loading...</div>;
     }
 
     if (error) {
@@ -35,7 +34,6 @@ export default function InventoryPage() {
 
     return (
         <InventoryList
-            userId={userId}
             items={items}
             updateItemQuantity={updateItemQuantity}
             removeItem={removeItem}

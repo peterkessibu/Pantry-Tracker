@@ -11,7 +11,7 @@ import MessagePopup from '../components/MessagePopup';
 import Navbar from '../components/NavBar'
 import useAuth from '../hooks/useAuth';
 import usePantry from '../hooks/usePantry';
-
+import { db } from '../firebase';
 
 const AddEditItemModal = dynamic(() => import('../components/AddEditItemModal'));
 
@@ -29,7 +29,8 @@ const Page = () => {
     const [message, setMessage] = useState('');
     const [messageOpen, setMessageOpen] = useState(false);
     const { user } = useAuth();
-    const { addPantryItem, getPantryItems } = usePantry(user?.uid);
+    const { addPantryItem, getPantryItems, updatePantryItemQuantity } = usePantry(user?.uid);
+
 
     const router = useRouter();
 
@@ -135,7 +136,6 @@ const Page = () => {
     const getTotalItems = () => inventory.length;
     const updateItemQuantity = async (itemId, newQuantity) => {
         try {
-            // Assuming you have a function to update an item in Firestore
             await updatePantryItemQuantity(itemId, newQuantity);
             // Update local state
             setInventory(prev =>
@@ -173,12 +173,13 @@ const Page = () => {
             {filteredInventory.length > 0 ? (
                 <InventoryList
                     items={inventory}
-                    inventory={filteredInventory}
-                    updateItemQuantity={updateItemQuantity}
+                    updateItemQuantity={updatePantryItemQuantity}
                     removeItem={removeItem}
                     handleEdit={handleEdit}
                     getTotalItems={getTotalItems}
+                    addPantryItem={addPantryItem}
                 />
+
             ) : (
                 <p className="text-gray-500">No items found. Add new items to your inventory.</p>
             )}

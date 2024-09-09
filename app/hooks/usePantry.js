@@ -1,7 +1,7 @@
-// hooks/usePantry.js
+'use client'
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, updateDoc, doc, deleteDoc, addDoc, orderBy } from 'firebase/firestore';
+import { collection, query, onSnapshot, updateDoc, doc, deleteDoc, addDoc, orderBy  } from 'firebase/firestore';
 
 const usePantry = (userId) => {
     const [items, setItems] = useState([]);
@@ -41,19 +41,30 @@ const usePantry = (userId) => {
             throw error;
         }
     }, [userId]);
-
-    const handleUpdateItem = useCallback(async (itemId, quantity) => {
+    const addPantryItem = async (name, quantity) => {
+        const docRef = await addDoc(collection(db, 'users', userId, 'inventory'), {
+            name,
+            quantity,
+        });
+        return docRef.id;
+    };
+    const handleUpdateItem = useCallback(async (itemId, newQuantity) => {
         try {
             const itemRef = doc(db, 'users', userId, 'inventory', itemId);
-            await updateDoc(itemRef, { quantity });
-            setItems(prevItems => prevItems.map(item =>
-                item.id === itemId ? { ...item, quantity } : item
-            ));
+            await updateDoc(itemRef, { quantity: newQuantity });
+
+            // Update local state
+            setItems(prevItems =>
+                prevItems.map(item =>
+                    item.id === itemId ? { ...item, quantity: newQuantity } : item
+                )
+            );
         } catch (error) {
             setError(error);
             throw error;
         }
     }, [userId]);
+    
 
     const handleRemoveItem = useCallback(async (itemId) => {
         try {
@@ -65,9 +76,16 @@ const usePantry = (userId) => {
             throw error;
         }
     }, [userId]);
-
-    // Return the correct functions
-    return { items, loading, error, addPantryItem: handleAddItem, updateItemQuantity: handleUpdateItem, removeItem: handleRemoveItem, getPantryItems: () => items };
+    return {
+        items,
+        loading,
+        error,
+        addPantryItem: handleAddItem,
+        updateItemQuantity: handleUpdateItem,
+        removeItem: handleRemoveItem,
+        getPantryItems: () => items
+    };
 };
+
 
 export default usePantry;
