@@ -2,16 +2,16 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { doc, setDoc, deleteDoc } from 'firebase/firestore';
 import dynamic from 'next/dynamic';
 import debounce from 'lodash/debounce';
 import SearchBar from '../components/SearchBar';
 import InventoryList from '../components/InventoryList';
 import MessagePopup from '../components/MessagePopup';
-import Navbar from '../components/NavBar'
+import Navbar from '../components/NavBar';
 import useAuth from '../hooks/useAuth';
 import usePantry from '../hooks/usePantry';
-import { db } from '../firebase';
+
 
 const AddEditItemModal = dynamic(() => import('../components/AddEditItemModal'));
 
@@ -21,36 +21,32 @@ const Page = () => {
     const [itemName, setItemName] = useState('');
     const [itemQuantity, setItemQuantity] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [isSorted, setIsSorted] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-    const [lastAddedItem, setLastAddedItem] = useState(null);
-    const [sortedMessageShown, setSortedMessageShown] = useState(false);
     const [message, setMessage] = useState('');
     const [messageOpen, setMessageOpen] = useState(false);
     const { user } = useAuth();
-    const { addPantryItem, getPantryItems, updatePantryItemQuantity } = usePantry(user?.uid);
-
+    const { addPantryItem, getPantryItems, updateItemQuantity, removeItem } = usePantry(user?.uid);
 
     const router = useRouter();
 
     // Fetch inventory items on component load
-    useEffect(() => {
-        if (user) {
-            const fetchInventory = async () => {
-                try {
-                    const items = await getPantryItems(user.uid);
-                    setInventory(items);
-                    setIsSorted(false);
-                    setSortedMessageShown(false);
-                } catch (error) {
-                    console.error("Error fetching pantry items: ", error);
-                }
-            };
+        useEffect(() => {
+            if (user) {
+                const fetchInventory = async () => {
+                    try {
+                        const items = getPantryItems();  // No need to await, it's now a local state function
+                        setInventory(items);
+                        setIsSorted(false);
+                        setSortedMessageShown(false);
+                    } catch (error) {
+                        console.error("Error fetching pantry items: ", error);
+                    }
+                };
 
-            fetchInventory();
-        }
-    }, [user, getPantryItems]);
+                fetchInventory();
+            }
+        }, [user, getPantryItems]);
 
     // Open modal for adding new item
     const handleOpen = () => {
@@ -65,38 +61,24 @@ const Page = () => {
         setItemQuantity('');
     };
 
-    const addItem = useCallback(async () => {
-        if (!itemName || !itemQuantity || !user) {
-            console.error('Missing required fields or user not authenticated');
-            return;
-        }
+    const addItem = async () => {
+        if (!itemName || !itemQuantity) return;
         try {
-            const newItem = await addPantryItem(itemName, parseInt(itemQuantity));
-            console.log('New item added:', newItem);
-            setLastAddedItem(itemName);
-            setItemName('');
-            setItemQuantity('');
-            setOpen(false);
+            await addPantryItem(itemName, parseInt(itemQuantity));
+            handleClose();
         } catch (error) {
-            console.error('Error adding item:', error);
-            // Optionally, set an error state here to display to the user
+            console.error("Error adding item: ", error);
         }
-    }, [itemName, itemQuantity, user, addPantryItem]);
+    };
 
-
-    // Remove item from Firestore
-    const removeItem = useCallback(async (itemId) => {
+    // Handle item removal
+    const removeInventoryItem = async (item) => {
         try {
-            const docRef = doc(db, 'users', user?.uid || '', 'inventory', itemId);
-            await deleteDoc(docRef);
-            setInventory(prev => prev.filter(item => item.id !== itemId)); // Remove from UI
-            if (itemId === lastAddedItem) {
-                setLastAddedItem(null); // Reset last added item if removed
-            }
+            await removeItem(item.id);
         } catch (error) {
             console.error("Error removing item: ", error);
         }
-    }, [lastAddedItem, user]);
+    };
 
     // Sort items alphabetically
     const sortItems = () => {
@@ -104,8 +86,6 @@ const Page = () => {
             a.name.localeCompare(b.name)
         );
         setInventory(sortedInventory);
-        setIsSorted(true);
-        setSortedMessageShown(true);
         setMessage('Inventory sorted alphabetically.');
         setMessageOpen(true);
     };
@@ -113,7 +93,6 @@ const Page = () => {
     // Handle message popup close
     const handleMessageClose = () => {
         setMessageOpen(false);
-        setSortedMessageShown(false);
     };
 
     const debouncedSetSearchQuery = useMemo(
@@ -133,24 +112,9 @@ const Page = () => {
         setOpen(true);
     };
 
-    const getTotalItems = () => inventory.length;
-    const updateItemQuantity = async (itemId, newQuantity) => {
-        try {
-            await updatePantryItemQuantity(itemId, newQuantity);
-            // Update local state
-            setInventory(prev =>
-                prev.map(item =>
-                    item.id === itemId ? { ...item, quantity: newQuantity } : item
-                )
-            );
-        } catch (error) {
-            console.error("Error updating item quantity: ", error);
-        }
-    };
-
     return (
         <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-5">
-            <Navbar/>
+            <Navbar />
             <SearchBar
                 searchQuery={searchQuery}
                 setSearchQuery={debouncedSetSearchQuery}
@@ -172,14 +136,11 @@ const Page = () => {
             {messageOpen && <MessagePopup message={message} onClose={handleMessageClose} />}
             {filteredInventory.length > 0 ? (
                 <InventoryList
-                    items={inventory}
-                    updateItemQuantity={updatePantryItemQuantity}
-                    removeItem={removeItem}
+                    items={filteredInventory}
+                    updateItemQuantity={updateItemQuantity}
+                    removeItem={removeInventoryItem}
                     handleEdit={handleEdit}
-                    getTotalItems={getTotalItems}
-                    addPantryItem={addPantryItem}
                 />
-
             ) : (
                 <p className="text-gray-500">No items found. Add new items to your inventory.</p>
             )}

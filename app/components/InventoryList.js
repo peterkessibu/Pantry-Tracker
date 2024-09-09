@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import AddEditItemModal from './AddEditItemModal';
 
-
 const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,7 +10,7 @@ const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem })
     const [itemQuantity, setItemQuantity] = useState('');
     const [editMode, setEditMode] = useState(false);
 
-    const handleCloseModal = () => {
+    const handleCloseModal = () => {''
         setIsModalOpen(false);
         setSelectedItem(null);
         setItemName('');

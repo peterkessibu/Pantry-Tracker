@@ -1,7 +1,7 @@
-'use client'
+'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, updateDoc, doc, deleteDoc, addDoc, orderBy  } from 'firebase/firestore';
+import { collection, query, onSnapshot, updateDoc, doc, deleteDoc, addDoc, orderBy } from 'firebase/firestore';
 
 const usePantry = (userId) => {
     const [items, setItems] = useState([]);
@@ -17,7 +17,7 @@ const usePantry = (userId) => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const fetchedItems = snapshot.docs.map(doc => ({
                 id: doc.id,
-                ...doc.data()
+                ...doc.data(),
             }));
             setItems(fetchedItems);
             setLoading(false);
@@ -29,11 +29,12 @@ const usePantry = (userId) => {
         return () => unsubscribe();
     }, [userId]);
 
-    const handleAddItem = useCallback(async (itemName, quantity) => {
+    // Function to add an item to the pantry
+    const addPantryItem = useCallback(async (itemName, quantity) => {
         try {
             const docRef = await addDoc(collection(db, 'users', userId, 'inventory'), {
                 name: itemName,
-                quantity: quantity
+                quantity: quantity,
             });
             return { id: docRef.id, name: itemName, quantity: quantity };
         } catch (error) {
@@ -41,14 +42,9 @@ const usePantry = (userId) => {
             throw error;
         }
     }, [userId]);
-    const addPantryItem = async (name, quantity) => {
-        const docRef = await addDoc(collection(db, 'users', userId, 'inventory'), {
-            name,
-            quantity,
-        });
-        return docRef.id;
-    };
-    const handleUpdateItem = useCallback(async (itemId, newQuantity) => {
+
+    // Function to update the quantity of an item
+    const updateItemQuantity = useCallback(async (itemId, newQuantity) => {
         try {
             const itemRef = doc(db, 'users', userId, 'inventory', itemId);
             await updateDoc(itemRef, { quantity: newQuantity });
@@ -64,9 +60,9 @@ const usePantry = (userId) => {
             throw error;
         }
     }, [userId]);
-    
 
-    const handleRemoveItem = useCallback(async (itemId) => {
+    // Function to remove an item
+    const removeItem = useCallback(async (itemId) => {
         try {
             const itemRef = doc(db, 'users', userId, 'inventory', itemId);
             await deleteDoc(itemRef);
@@ -76,16 +72,21 @@ const usePantry = (userId) => {
             throw error;
         }
     }, [userId]);
+
+    // Function to fetch all pantry items (this is the important fix)
+    const getPantryItems = useCallback(() => {
+        return items;
+    }, [items]);
+
     return {
         items,
         loading,
         error,
-        addPantryItem: handleAddItem,
-        updateItemQuantity: handleUpdateItem,
-        removeItem: handleRemoveItem,
-        getPantryItems: () => items
+        addPantryItem,
+        updateItemQuantity,
+        removeItem,
+        getPantryItems,  // Correctly return this functio
     };
 };
-
 
 export default usePantry;
