@@ -85,7 +85,7 @@ const usePantry = (userId) => {
         addPantryItem,
         updateItemQuantity,
         removeItem,
-        getPantryItems,  // Correctly return this functio
+        getPantryItems,  
     };
 };
 
