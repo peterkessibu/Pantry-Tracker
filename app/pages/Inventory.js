@@ -7,6 +7,8 @@ import InventoryList from '../components/InventoryList';
 import usePantry from '../hooks/usePantry';
 import { db } from '../firebase';
 
+import 'ldrs/bouncy'
+
 export default function InventoryPage() {
     const [userId, setUserId] = useState(null);
     const router = useRouter();
@@ -25,7 +27,15 @@ export default function InventoryPage() {
     }, [router]);
 
     if (!userId || loading) {
-        return <div>Loading...</div>;
+        return(
+            <div>
+                <l-bouncy
+                    size="45"
+                    speed="1.75"
+                    color="black"
+                ></l-bouncy>
+            </div>
+        ) 
     }
 
     if (error) {

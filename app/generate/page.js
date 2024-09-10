@@ -31,22 +31,22 @@ const Page = () => {
     const router = useRouter();
 
     // Fetch inventory items on component load
-        useEffect(() => {
-            if (user) {
-                const fetchInventory = async () => {
-                    try {
-                        const items = getPantryItems();  // No need to await, it's now a local state function
-                        setInventory(items);
-                        setIsSorted(false);
-                        setSortedMessageShown(false);
-                    } catch (error) {
-                        console.error("Error fetching pantry items: ", error);
-                    }
-                };
+    useEffect(() => {
+        if (user) {
+            const fetchInventory = async () => {
+                try {
+                    const items = getPantryItems();  // No need to await, it's now a local state function
+                    setInventory(items);
+                    setIsSorted(false);
+                    setSortedMessageShown(false);
+                } catch (error) {
+                    console.error("Error fetching pantry items: ", error);
+                }
+            };
 
-                fetchInventory();
-            }
-        }, [user, getPantryItems]);
+            fetchInventory();
+        }
+    }, [user, getPantryItems]);
 
     // Open modal for adding new item
     const handleOpen = () => {

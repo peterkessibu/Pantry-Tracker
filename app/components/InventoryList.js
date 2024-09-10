@@ -10,7 +10,7 @@ const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem })
     const [itemQuantity, setItemQuantity] = useState('');
     const [editMode, setEditMode] = useState(false);
 
-    const handleCloseModal = () => {''
+    const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedItem(null);
         setItemName('');
@@ -25,7 +25,7 @@ const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem })
             } else {
                 await addPantryItem(itemName, parseInt(itemQuantity));
             }
-            handleCloseModal();
+            handleCloseModal(); // Close the modal after adding or editing item
         } catch (error) {
             console.error('Error saving item:', error);
         }
@@ -67,7 +67,7 @@ const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem })
                                 >
                                     +
                                 </button>
-                                <span className="text-slate-800 mx-2 sm:mx-3 text-xs sm:text-sm md:text-base">{item.quantity}</span>
+                                <span className="text-slate-800 p-3 mx-2 sm:mx-3 text-xs sm:text-sm md:text-base">{item.quantity}</span>
                                 <button
                                     className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#ff4646] transition duration-300 text-xs sm:text-sm md:text-base"
                                     onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
