@@ -1,9 +1,11 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { auth } from '../firebase';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
     const [user, setUser] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
@@ -12,6 +14,13 @@ const Navbar = () => {
 
         return () => unsubscribe();
     }, []);
+    
+    const handleLogout = () => {
+        localStorage.clear();
+        sessionStorage.clear();
+
+        router.push('/');
+    };
 
     if (!user) return null;
 
@@ -25,7 +34,13 @@ const Navbar = () => {
                         alt="User avatar"
                         className="w-10 h-10 rounded-full mr-4"
                     />
-                    <span className="text-white">{user.displayName}</span>
+                    <span className="text-white hidden sm:block">{user.displayName}</span>
+                    <button
+                        onClick={handleLogout}
+                        className="bg-[#d13b3b] text-white p-2 rounded-lg transition duration-300 ease-in-out mx-4"
+                    >
+                        Logout
+                    </button>
                 </div>
             </div>
         </nav>

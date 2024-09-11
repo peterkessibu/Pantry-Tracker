@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import AddEditItemModal from './AddEditItemModal';
 
 const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem }) => {
     const [selectedItem, setSelectedItem] = useState(null);
@@ -21,28 +20,43 @@ const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem })
     const handleSave = async () => {
         try {
             if (editMode && selectedItem) {
+                // Edit existing item
                 await updateItemQuantity(selectedItem.id, parseInt(itemQuantity));
             } else {
+                // Add new item
                 await addPantryItem(itemName, parseInt(itemQuantity));
             }
-            handleCloseModal(); // Close the modal after adding or editing item
+            handleCloseModal(); // Close the modal after saving item
         } catch (error) {
             console.error('Error saving item:', error);
         }
     };
 
-    const handleEdit = (item) => {
-        setSelectedItem(item);
-        setItemName(item.name);
-        setItemQuantity(item.quantity.toString());
-        setEditMode(true);
-        setIsModalOpen(true);
+    // Function to handle editing an item
+    const handleEditItem = (item) => {
+        setSelectedItem(item); // Set the selected item for editing
+        setItemName(item.name); // Set the name in the modal input
+        setItemQuantity(item.quantity.toString()); // Set the quantity in the modal input
+        setEditMode(true); // Set the modal in edit mode
+        setIsModalOpen(true); // Open the modal
+    };
+
+    // Function to handle removing an item
+    const handleRemoveItem = (itemId) => {
+        if (confirm('Are you sure you want to remove this item?')) {
+            removeItem(itemId); // Remove the item by calling the provided removeItem function
+        }
     };
 
     const handleQuantityChange = async (itemId, newQuantity) => {
         if (newQuantity >= 0) {
             await updateItemQuantity(itemId, newQuantity);
         }
+    };
+
+    // Function to calculate the total number of items
+    const getTotalItems = () => {
+        return items.reduce((total, item) => total + item.quantity, 0);
     };
 
     if (!items.length) {
@@ -54,6 +68,12 @@ const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem })
             <div className="bg-[#408d86] py-4 flex justify-center rounded-t-xl">
                 <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-100">Inventory Items</h2>
             </div>
+
+            {/* Display total number of items */}
+            <div className="text-right text-gray-600 font-bold text-sm sm:text-base md:text-lg lg:text-xl mb-4">
+                Total Items: {getTotalItems()}
+            </div>
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4">
                 {items.map((item) => (
                     <div key={item.id} className="bg-white border-2 border-[#408d86] rounded-lg shadow-lg p-4">
@@ -79,13 +99,13 @@ const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem })
                             <div className="flex flex-col text-[12px] justify-between">
                                 <button
                                     className="bg-[#cf2f2f] text-white py-2 px-3 rounded-lg hover:bg-[#c02828]"
-                                    onClick={() => removeItem(item.id)}
+                                    onClick={() => handleRemoveItem(item.id)} // Call handleRemoveItem on click
                                 >
                                     Remove
                                 </button>
                                 <button
                                     className="bg-[#408d86] text-white py-2 px-3 rounded-lg hover:bg-[#298b83] mt-2"
-                                    onClick={() => handleEdit(item)}
+                                    onClick={() => handleEditItem(item)} // Call handleEditItem on click
                                 >
                                     Edit
                                 </button>
@@ -94,6 +114,7 @@ const InventoryList = ({ items, updateItemQuantity, removeItem, addPantryItem })
                     </div>
                 ))}
             </div>
+
             {isModalOpen && (
                 <AddEditItemModal
                     open={isModalOpen}

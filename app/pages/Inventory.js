@@ -6,7 +6,6 @@ import { auth } from '../firebase';
 import InventoryList from '../components/InventoryList';
 import usePantry from '../hooks/usePantry';
 import { db } from '../firebase';
-
 import 'ldrs/bouncy'
 
 export default function InventoryPage() {
@@ -14,6 +13,7 @@ export default function InventoryPage() {
     const router = useRouter();
     const { items, loading, error, addPantryItem, updateItemQuantity, removeItem } = usePantry(userId);
 
+    bouncy.register()
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {

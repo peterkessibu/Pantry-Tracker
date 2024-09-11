@@ -23,7 +23,7 @@ const AuthPage = ({ isSignUp }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsLoading(false); // Stop loading after 2 seconds
-        }, 2000); // 2-second loading animation
+        }, 3000); // 2-second loading animation
 
         return () => clearTimeout(timer); // Cleanup timer on component unmount
     }, []);

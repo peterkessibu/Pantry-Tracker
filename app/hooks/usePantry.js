@@ -29,8 +29,10 @@ const usePantry = (userId) => {
         return () => unsubscribe();
     }, [userId]);
 
-    // Function to add an item to the pantry
     const addPantryItem = useCallback(async (itemName, quantity) => {
+        if (!userId) {
+            throw new Error("User ID is undefined");
+        }
         try {
             const docRef = await addDoc(collection(db, 'users', userId, 'inventory'), {
                 name: itemName,
@@ -43,13 +45,14 @@ const usePantry = (userId) => {
         }
     }, [userId]);
 
-    // Function to update the quantity of an item
     const updateItemQuantity = useCallback(async (itemId, newQuantity) => {
+        if (!userId || !itemId) {
+            throw new Error("User ID or Item ID is undefined");
+        }
         try {
             const itemRef = doc(db, 'users', userId, 'inventory', itemId);
             await updateDoc(itemRef, { quantity: newQuantity });
 
-            // Update local state
             setItems(prevItems =>
                 prevItems.map(item =>
                     item.id === itemId ? { ...item, quantity: newQuantity } : item
@@ -61,8 +64,10 @@ const usePantry = (userId) => {
         }
     }, [userId]);
 
-    // Function to remove an item
     const removeItem = useCallback(async (itemId) => {
+        if (!userId || !itemId) {
+            throw new Error("User ID or Item ID is undefined");
+        }
         try {
             const itemRef = doc(db, 'users', userId, 'inventory', itemId);
             await deleteDoc(itemRef);
@@ -73,7 +78,6 @@ const usePantry = (userId) => {
         }
     }, [userId]);
 
-    // Function to fetch all pantry items (this is the important fix)
     const getPantryItems = useCallback(() => {
         return items;
     }, [items]);
