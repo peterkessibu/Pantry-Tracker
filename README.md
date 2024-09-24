@@ -1,4 +1,3 @@
-
 # Shelfsense
 
 Shelfsense is an inventory management application that allows users to add, edit, remove, and sort inventory items. It also provides the ability to search through the inventory list and displays the total count of all items in the inventory.
@@ -24,17 +23,20 @@ Shelfsense is an inventory management application that allows users to add, edit
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/shelfsense.git
    cd shelfsense
    ```
 
 2. Install the dependencies:
+
    ```bash
    npm install
    ```
 
 3. Set up Firebase:
+
    - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/).
    - Set up Firestore and configure your security rules.
    - Add your Firebase configuration to a `.env.local` file:
@@ -48,6 +50,7 @@ Shelfsense is an inventory management application that allows users to add, edit
      ```
 
 4. Run the development server:
+
    ```bash
    npm run dev
    ```
@@ -76,6 +79,8 @@ If you'd like to contribute to this project, please follow these steps:
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
 ```
 
 Make sure to replace the Firebase configuration details with your actual values. Also, adjust the repository link, contributing instructions, and license section as necessary for your project.
+```
