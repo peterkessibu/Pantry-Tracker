@@ -2,6 +2,7 @@
 
 import { ArrowRight, CheckCircle, Edit, Search, Trash2, ArrowUpDown, PlusCircle } from "lucide-react"
 
+
 export default function Component() {
   return (
     <div className="flex flex-col min-h-screen bg-[#e2f5f3]">
@@ -13,41 +14,63 @@ export default function Component() {
         </Link>
 
         {/* Sign In Button with Link */}
-        <Link href="/signin">
-          <Button className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-md">
-            Sign In
-          </Button>
-        </Link>
-      </header>
+          <Link href="/signin">
+            <Button className="text-sm font-medium bg-green-800 text-white px-4 py-2 rounded-md">
+              Sign In
+            </Button>
+          </Link>
+              </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center">
-        <section className="w-full h-screen py-12 md:py-24 flex items-center justify-center">
-          <div className="container px-4 md:px-6 flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-3">
-              <h1 className="text-3xl font-bold tracking-tighter md:text-5xl lg:text-6xl">
-                Manage Your Pantry with Ease
-              </h1>
-              <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl">
-                Shelfsense helps you keep track of your pantry inventory, so you always know what you have and what you need.
-              </p>
+              <main className="flex-1 flex flex-col items-center justify-center">
+          <section className="w-full h-screen py-12 md:py-24 flex flex-col items-center justify-center">
+            <div className="container px-4 md:px-6 flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-3">
+                <h1 className="text-3xl font-bold tracking-tighter md:text-5xl lg:text-6xl">
+            Manage Your Pantry with Ease
+                </h1>
+                <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl">
+            Shelfsense helps you keep track of your pantry inventory, so you always know what you have and what you need.
+                </p>
+              </div>
+              <div>
+                <Link href="/sign-up">
+            <Button>Get Started</Button>
+                </Link>
+              </div>
             </div>
-            <div className="">
-              <Link href="/sign-up">
-                <Button>Get Started</Button>
-              </Link>
+
+            {/* Carousel Section */}
+            <div className="w-full overflow-hidden py-8 mt-8">
+              <div className="flex gap-12 w-full items-center justify-start animate-scroll whitespace-nowrap">
+                <img src="https://via.placeholder.com/400x300" alt="Image 1" className="h-12 w-12 object-cover rounded-lg" />
+                <img src="https://via.placeholder.com/400x300" alt="Image 2" className="h-12 w-12 object-cover rounded-lg" />
+                <img src="https://via.placeholder.com/400x300" alt="Image 3" className="h-12 w-12 object-cover rounded-lg" />
+                <img src="https://via.placeholder.com/400x300" alt="Image 4" className="h-12 w-12 object-cover rounded-lg" />
+                <img src="https://via.placeholder.com/400x300" alt="Image 5" className="h-12 w-12 object-cover rounded-lg" />
+              </div>
+
+              <style jsx>{`
+                @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+                }
+                .animate-scroll {
+            animation: scroll 13s linear infinite;
+                }
+              `}</style>
             </div>
-          </div>
-        </section>
-        <section className="w-full h-screen py-12 md:py-24 bg-gray-100 flex items-center justify-center">
-          <div className="container px-4 md:px-6 text-center">
-            <h2 className="text-3xl font-bold tracking-tighter md:text-5xl text-center mb-8">Key Features</h2>
-            <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
-              {features.map((feature, index) => (
-                <FeatureCard key={index} icon={feature.icon} title={feature.title} description={feature.description} />
-              ))}
+          </section>
+
+          <section className="w-full h-screen py-12 md:py-24 bg-gray-100 flex items-center justify-center">
+            <div className="container px-4 md:px-6 text-center">
+              <h2 className="text-3xl font-bold tracking-tighter md:text-5xl text-center mb-8">Key Features</h2>
+              <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
+                {features.map((feature, index) => (
+            <FeatureCard key={index} icon={feature.icon} title={feature.title} description={feature.description} />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
         <section className="w-full h-screen py-12 md:py-24 flex items-center justify-center bg-[#e2f5f3]">
           <div className="container px-4 md:px-6 flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
