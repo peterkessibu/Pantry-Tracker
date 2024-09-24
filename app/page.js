@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   ArrowRight,
   CheckCircle,
@@ -9,8 +10,17 @@ import {
   ArrowUpDown,
   PlusCircle,
 } from "lucide-react";
+import Link from "next/link"; // Make sure to import Link
 
 export default function Component() {
+  const images = [
+    "/image1.jpg", // Update with your actual image paths in the public directory
+    "/image2.jpg",
+    "/image3.jpg",
+    "/image4.jpg",
+    "/image5.jpg",
+  ];
+
   return (
     <div className="flex flex-col min-h-screen bg-[#e2f5f3]">
       <header className="px-4 lg:px-6 h-14 flex items-center justify-between">
@@ -53,31 +63,16 @@ export default function Component() {
           {/* Carousel Section */}
           <div className="w-full overflow-hidden py-8 mt-8">
             <div className="flex gap-12 w-full items-center justify-start animate-scroll whitespace-nowrap">
-              <img
-                src="https://via.placeholder.com/400x300"
-                alt="Image 1"
-                className="h-12 w-12 object-cover rounded-lg"
-              />
-              <img
-                src="https://via.placeholder.com/400x300"
-                alt="Image 2"
-                className="h-12 w-12 object-cover rounded-lg"
-              />
-              <img
-                src="https://via.placeholder.com/400x300"
-                alt="Image 3"
-                className="h-12 w-12 object-cover rounded-lg"
-              />
-              <img
-                src="https://via.placeholder.com/400x300"
-                alt="Image 4"
-                className="h-12 w-12 object-cover rounded-lg"
-              />
-              <img
-                src="https://via.placeholder.com/400x300"
-                alt="Image 5"
-                className="h-12 w-12 object-cover rounded-lg"
-              />
+              {images.map((src, index) => (
+                <Image
+                  key={index}
+                  src={src}
+                  alt={`Image ${index + 1}`}
+                  width={48} 
+                  height={48}
+                  className="object-cover rounded-lg"
+                />
+              ))}
             </div>
 
             <style jsx>{`
@@ -113,35 +108,9 @@ export default function Component() {
             </div>
           </div>
         </section>
-        <section className="w-full h-screen py-12 md:py-24 flex items-center justify-center bg-[#e2f5f3]">
-          <div className="container px-4 md:px-6 flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter md:text-5xl">
-                Ready to Organize Your Pantry?
-              </h2>
-              <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl lg:text-base xl:text-xl dark:text-gray-400">
-                Join thousands of happy users who have transformed their pantry
-                management with Shelfsense.
-              </p>
-            </div>
-            <div className="w-full max-w-sm space-y-2">
-              <form className="flex space-x-2">
-                <Input
-                  className="max-w-lg flex-1"
-                  placeholder="Enter your email"
-                  type="email"
-                />
-                <Button type="submit">
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </form>
-            </div>
-          </div>
-        </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-6 border-t">
+        <p className="text-xs text-gray-500 items-center mx-auto">
           © 2024 Shelfsense. All rights reserved.
         </p>
       </footer>
@@ -206,15 +175,6 @@ function Button({ children, variant, ...props }) {
     >
       {children}
     </button>
-  );
-}
-
-function Input({ className, ...props }) {
-  return (
-    <input
-      className={`border rounded-md p-2 text-sm ${className}`}
-      {...props}
-    />
   );
 }
 
