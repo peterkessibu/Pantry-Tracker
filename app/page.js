@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import {
-  ArrowRight,
   CheckCircle,
   Edit,
   Search,
@@ -10,25 +9,31 @@ import {
   ArrowUpDown,
   PlusCircle,
 } from "lucide-react";
-import Link from "next/link"; // Make sure to import Link
 
 export default function Component() {
   const images = [
-    "/image1.jpg", // Update with your actual image paths in the public directory
-    "/image2.jpg",
-    "/image3.jpg",
-    "/image4.jpg",
-    "/image5.jpg",
+    "/images/pan.png",
+    "/images/pantry.png",
+    "/images/food.png",
+    "/images/cutlery.png",
+    "/images/cutting-board.png",
+    "/images/diet.png",
+    "/images/fast-food.png",
+    "/images/kitchen-appliance.png",
+    "/images/oil-bottle.png",
+    "/images/juice.png",
+    "/images/inventory.png",
+    "/images/trolley.png",
+    "/images/colander.png",
+    "/images/blender.png",
+    "/images/hand.png",
   ];
 
   return (
     <div className="flex flex-col min-h-screen bg-[#e2f5f3]">
       <header className="px-4 lg:px-6 h-14 flex items-center justify-between">
         {/* Logo and Text */}
-        <Link
-          className="flex items-center justify-center md:justify-start"
-          href="#"
-        >
+        <Link className="flex items-center justify-center md:justify-start" href="#">
           <ShelfIcon className="h-6 w-6" />
           <span className="text-black ml-2 text-xl">Shelfsense</span>
         </Link>
@@ -42,7 +47,7 @@ export default function Component() {
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center">
-        <section className="w-full h-screen py-12 md:py-24 flex flex-col items-center justify-center">
+        <section className="w-full py-12 md:py-24 flex flex-col items-center justify-center">
           <div className="container px-4 md:px-6 flex flex-col items-center space-y-4 text-center">
             <div className="space-y-3">
               <h1 className="text-3xl font-bold tracking-tighter md:text-5xl lg:text-6xl">
@@ -62,13 +67,13 @@ export default function Component() {
 
           {/* Carousel Section */}
           <div className="w-full overflow-hidden py-8 mt-8">
-            <div className="flex gap-12 w-full items-center justify-start animate-scroll whitespace-nowrap">
+            <div className="flex gap-4 sm:gap-8 w-full items-center justify-start animate-scroll whitespace-nowrap">
               {images.map((src, index) => (
                 <Image
                   key={index}
                   src={src}
                   alt={`Image ${index + 1}`}
-                  width={48} 
+                  width={48}
                   height={48}
                   className="object-cover rounded-lg"
                 />
@@ -91,7 +96,7 @@ export default function Component() {
           </div>
         </section>
 
-        <section className="w-full h-screen py-12 md:py-24 bg-gray-100 flex items-center justify-center">
+        <section className="w-full py-12 md:py-24 bg-gray-100 flex items-center justify-center">
           <div className="container px-4 md:px-6 text-center">
             <h2 className="text-3xl font-bold tracking-tighter md:text-5xl text-center mb-8">
               Key Features
@@ -170,7 +175,8 @@ function FeatureCard({ icon, title, description }) {
 function Button({ children, variant, ...props }) {
   return (
     <button
-      className={`px-4 py-2 rounded-md text-sm font-medium transition ${variant === "outline" ? "border border-gray-300" : "bg-green-800 text-white"}`}
+      className={`px-4 py-2 rounded-md text-sm font-medium transition ${variant === "outline" ? "border border-gray-300" : "bg-green-800 text-white"
+        }`}
       {...props}
     >
       {children}
