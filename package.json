@@ -15,6 +15,7 @@
     "firebase": "^10.12.5",
     "ldrs": "^1.0.2",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.445.0",
     "next": "^14.2.8",
     "react": "^18",
     "react-dom": "^18",
