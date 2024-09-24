@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
 import SearchBar from "../components/SearchBar";
 import InventoryList from "../components/InventoryList";
 import MessagePopup from "../components/MessagePopup";
-import Navbar from "../components/NavBar";
+import Header from "../components/Header";
 import useAuth from "../hooks/useAuth";
 import usePantry from "../hooks/usePantry";
 
@@ -65,7 +64,7 @@ const Page = () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-4 mt-5">
-      <Navbar />
+      <Header />
       <SearchBar
         searchQuery={searchQuery}
         setSearchQuery={debouncedSetSearchQuery}

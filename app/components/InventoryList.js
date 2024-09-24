@@ -22,22 +22,18 @@ const InventoryList = ({
     setEditMode(false);
   };
 
-  const handleSave = async () => {
-    try {
-      if (editMode && selectedItem) {
-        // Update both item name and quantity when in edit mode
-        await updateItemQuantity(selectedItem.id, {
-          name: itemName,
-          quantity: parseInt(itemQuantity),
-        });
-      } else {
-        await addPantryItem(itemName, parseInt(itemQuantity));
-      }
-      handleCloseModal();
-    } catch (error) {
-      console.error("Error saving item:", error);
-    }
-  };
+    const handleSave = async () => {
+        try {
+            if (editMode && selectedItem) {
+                await updateItemQuantity(selectedItem.id, parseInt(itemQuantity));
+            } else {
+                await addPantryItem(itemName, parseInt(itemQuantity));
+            }
+            handleCloseModal();
+        } catch (error) {
+            console.error("Error saving item:", error);
+        }
+    };
 
   const handleEditItem = (item) => {
     setSelectedItem(item);
@@ -57,11 +53,13 @@ const InventoryList = ({
     }
   };
 
-  const handleQuantityChange = async (itemId, newQuantity) => {
-    if (newQuantity >= 0) {
-      await updateItemQuantity(itemId, { quantity: newQuantity });
-    }
-  };
+    const handleQuantityChange = async (itemId, increment) => {
+        const newQuantity = item.quantity + increment;
+        if (newQuantity >= 0) {
+            await updateItemQuantity(itemId, newQuantity);
+        }
+    };
+
 
   const getTotalItems = () => {
     return items.reduce((total, item) => total + item.quantity, 0);
