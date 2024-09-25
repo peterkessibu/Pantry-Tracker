@@ -1,19 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { auth } from "../firebase";
 import InventoryList from "../components/InventoryList";
 import usePantry from "../hooks/usePantry";
-import { db } from "../firebase";
-import "ldrs/bouncy";
 
 export default function InventoryPage() {
   const [userId, setUserId] = useState(null);
   const router = useRouter();
   const {
     items,
-    loading,
     error,
     addPantryItem,
     updateItemQuantity,
@@ -21,6 +18,7 @@ export default function InventoryPage() {
   } = usePantry(userId);
 
   bouncy.register();
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -33,12 +31,8 @@ export default function InventoryPage() {
     return () => unsubscribe();
   }, [router]);
 
-  if (!userId || loading) {
-    return (
-      <div>
-        <l-bouncy size="45" speed="1.75" color="black"></l-bouncy>
-      </div>
-    );
+  if (!userId) {
+    return null;
   }
 
   if (error) {

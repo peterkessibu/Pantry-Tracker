@@ -28,7 +28,7 @@ const Carousel = ({ images }) => {
           }
         }
         .animate-scroll {
-          animation: scroll 13s linear infinite;
+          animation: scroll 15s linear infinite;
         }
       `}</style>
         </div>

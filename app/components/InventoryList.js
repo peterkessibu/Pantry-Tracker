@@ -22,18 +22,18 @@ const InventoryList = ({
     setEditMode(false);
   };
 
-    const handleSave = async () => {
-        try {
-            if (editMode && selectedItem) {
-                await updateItemQuantity(selectedItem.id, parseInt(itemQuantity));
-            } else {
-                await addPantryItem(itemName, parseInt(itemQuantity));
-            }
-            handleCloseModal();
-        } catch (error) {
-            console.error("Error saving item:", error);
-        }
-    };
+  const handleSave = async () => {
+    try {
+      if (editMode && selectedItem) {
+        await updateItemQuantity(selectedItem.id, parseInt(itemQuantity));
+      } else {
+        await addPantryItem(itemName, parseInt(itemQuantity));
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error saving item:", error);
+    }
+  };
 
   const handleEditItem = (item) => {
     setSelectedItem(item);
@@ -53,13 +53,14 @@ const InventoryList = ({
     }
   };
 
-    const handleQuantityChange = async (itemId, increment) => {
-        const newQuantity = item.quantity + increment;
-        if (newQuantity >= 0) {
-            await updateItemQuantity(itemId, newQuantity);
-        }
-    };
+  const handleQuantityChange = async (itemId, increment) => {
+    const item = items.find(item => item.id === itemId); // Get the current item
+    const newQuantity = item.quantity + increment; // Calculate new quantity
 
+    if (newQuantity >= 0) {
+      await updateItemQuantity(itemId, newQuantity); // Update the quantity
+    }
+  };
 
   const getTotalItems = () => {
     return items.reduce((total, item) => total + item.quantity, 0);
@@ -101,9 +102,7 @@ const InventoryList = ({
               <div className="flex gap-1 items-center">
                 <button
                   className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#1e968c] transition duration-300 text-xs sm:text-sm md:text-base"
-                  onClick={() =>
-                    handleQuantityChange(item.id, item.quantity + 1)
-                  }
+                  onClick={() => handleQuantityChange(item.id, 1)} // Increment by 1
                 >
                   +
                 </button>
@@ -112,9 +111,7 @@ const InventoryList = ({
                 </span>
                 <button
                   className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#ff4646] transition duration-300 text-xs sm:text-sm md:text-base"
-                  onClick={() =>
-                    handleQuantityChange(item.id, item.quantity - 1)
-                  }
+                  onClick={() => handleQuantityChange(item.id, -1)} // Decrement by 1
                   disabled={item.quantity === 0}
                 >
                   -
@@ -153,38 +150,45 @@ const InventoryList = ({
                 fill="#ffffff"
                 x="0px"
                 y="0px"
-                width="15"
-                height="15"
-                viewBox="0 0 50 50"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
               >
-                <path d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
+                <path d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                  fill="#ffffff"
+                ></path>
               </svg>
             </button>
-            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-center text-gray-800">
-              {editMode ? "Edit Item" : "Add Item"}
-            </h2>
-            <div className="flex flex-col gap-4">
-              <input
-                type="text"
-                className="border-[#10423e] border-[1px] text-[#10423e] focus:outline-none focus:ring-2 focus:ring-[#408d86] focus:border-transparent placeholder:text-gray-600 p-2 border-t-0 border-l-0 border-r-0"
-                placeholder="Item"
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-              />
-              <input
-                type="number"
-                className="border-[#10423e] border-[1px] text-[#10423e] focus:outline-none focus:ring-2 focus:ring-[#408d86] focus:border-transparent placeholder:text-gray-600 p-2 border-t-0 border-l-0 border-r-0"
-                placeholder="Quantity"
-                value={itemQuantity}
-                onChange={(e) => setItemQuantity(e.target.value)}
-              />
-              <button
-                className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
-                onClick={handleSave}
-              >
-                {editMode ? "Save Changes" : "Add"}
-              </button>
-            </div>
+
+            <h3 className="text-lg font-bold text-gray-700">
+              {editMode ? "Edit Item" : "Add New Item"}
+            </h3>
+
+            <input
+              type="text"
+              className="border-gray-300 border-2 rounded-lg p-2 w-full"
+              placeholder="Item Name"
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              required
+            />
+            <input
+              type="number"
+              className="border-gray-300 border-2 rounded-lg p-2 w-full"
+              placeholder="Quantity"
+              value={itemQuantity}
+              onChange={(e) => setItemQuantity(e.target.value)}
+              required
+            />
+
+            <button
+              className="bg-[#408d86] text-white py-2 rounded-lg hover:bg-[#2f6e69] transition duration-300"
+              onClick={handleSave}
+            >
+              {editMode ? "Save Changes" : "Add Item"}
+            </button>
           </div>
         </div>
       )}
