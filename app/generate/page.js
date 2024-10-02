@@ -33,7 +33,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (!user) {
-      router.push('/generate');
+      router.push("/generate");
     }
   }, [user, router]);
 
@@ -77,7 +77,7 @@ const HomePage = () => {
       }
       showMessage("Item removed successfully");
     },
-    [lastAddedItem, deletePantryItem]
+    [lastAddedItem, deletePantryItem],
   );
 
   const handleOpen = () => setOpen(true);
@@ -120,7 +120,7 @@ const HomePage = () => {
   };
 
   const filteredInventory = inventory.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    item.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const sortedInventory = isSorted
@@ -207,14 +207,18 @@ const HomePage = () => {
                     <div className="flex items-center gap-2">
                       <button
                         className="bg-teal-600 text-white py-1 px-2 rounded-lg hover:bg-teal-700 transition duration-300"
-                        onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateItemQuantity(item.id, item.quantity + 1)
+                        }
                       >
                         +
                       </button>
                       <span className="text-gray-800">{item.quantity}</span>
                       <button
                         className="bg-gray-300 text-gray-600 py-1 px-2 rounded-lg hover:bg-red-500 hover:text-white transition duration-300"
-                        onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                        onClick={() =>
+                          updateItemQuantity(item.id, item.quantity - 1)
+                        }
                         disabled={item.quantity === 0}
                       >
                         -
@@ -240,7 +244,6 @@ const HomePage = () => {
                       </button>
                     </div>
                   </td>
-
                 </tr>
               ))}
             </tbody>
@@ -301,8 +304,6 @@ const HomePage = () => {
         </div>
       )}
     </div>
-
-
   );
 };
 
