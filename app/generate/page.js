@@ -6,6 +6,7 @@ import useAuth from "../hooks/useAuth";
 import usePantry from "../hooks/usePantry";
 import { Edit, Trash } from "lucide-react";
 import { UserHeader } from "../components/UserHeader";
+import  Loading  from "./loading"; 
 
 const HomePage = () => {
   const [open, setOpen] = useState(false);
@@ -19,6 +20,7 @@ const HomePage = () => {
   const [sortedMessageShown, setSortedMessageShown] = useState(false);
   const [message, setMessage] = useState("");
   const [messageOpen, setMessageOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // New loading state
   const router = useRouter();
 
   const { user } = useAuth();
@@ -37,6 +39,15 @@ const HomePage = () => {
       router.push("/generate");
     }
   }, [user, router]);
+
+  // New useEffect to handle loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false); // Set loading to false after 3 seconds
+    }, 3000);
+
+    return () => clearTimeout(timer); // Cleanup timer on component unmount
+  }, []);
 
   function ShelfIcon(props) {
     return (
@@ -128,8 +139,12 @@ const HomePage = () => {
     ? [...filteredInventory].sort((a, b) => a.name.localeCompare(b.name))
     : filteredInventory;
 
+  if (loading) {
+    return <Loading />; // Show your loading component
+  }
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />; // Optionally handle the isLoading state
   }
 
   if (error) {
@@ -226,14 +241,13 @@ const HomePage = () => {
                         className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 flex items-center justify-center"
                         onClick={() => handleEdit(item)}
                       >
-                        <Edit className="h-4 w-4 md:h-5 md:w-5" />
+                        <Edit size={16} />
                       </button>
-
                       <button
-                        className="bg-[#f04444] text-white p-2 rounded-lg hover:bg-[#a02f2f] flex items-center justify-center"
+                        className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center"
                         onClick={() => removeItem(item.id)}
                       >
-                        <Trash className="h-4 w-4 md:h-5 md:w-5" />
+                        <Trash size={16} />
                       </button>
                     </div>
                   </td>
@@ -243,46 +257,13 @@ const HomePage = () => {
           </table>
         </div>
 
-      </div>
-
-      {/* Add/Edit Item Modal */}
-      {open && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] sm:w-[500px]">
-            <h2 className="text-xl font-semibold mb-4">
-              {editMode ? "Edit Item" : "Add New Item"}
-            </h2>
-            <input
-              type="text"
-              placeholder="Item name"
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-              className="border border-gray-300 p-3 w-full rounded-lg mb-4"
-            />
-            <input
-              type="number"
-              placeholder="Quantity"
-              value={itemQuantity}
-              onChange={(e) => setItemQuantity(e.target.value)}
-              className="border border-gray-300 p-3 w-full rounded-lg mb-4"
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={handleClose}
-                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="bg-[#408d86] text-white py-2 px-4 rounded-lg hover:bg-[#2b5c58]"
-              >
-                {editMode ? "Save Changes" : "Add Item"}
-              </button>
-            </div>
+        {/* Messages */}
+        {sortedMessageShown && (
+          <div className="mt-4 text-center text-green-600">
+            {isSorted ? "Sorted A-Z" : "Unsorted"}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

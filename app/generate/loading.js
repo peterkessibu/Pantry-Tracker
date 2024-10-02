@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 
-export default function Loading() {
+const Loading = () => { // Declare the component first
     const [seconds, setSeconds] = useState(5);
 
     useEffect(() => {
         if (seconds > 0) {
             const timer = setInterval(() => {
                 setSeconds((prev) => prev - 1);
-            }, 2000);
+            }, 2980); // Adjust this interval if you want
 
             return () => clearInterval(timer);
         }
@@ -23,4 +23,6 @@ export default function Loading() {
             </div>
         </div>
     );
-}
+};
+
+export default Loading; // Export it at the end
