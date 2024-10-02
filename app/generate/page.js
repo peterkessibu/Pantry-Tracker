@@ -227,14 +227,14 @@ const HomePage = () => {
                         className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 flex items-center justify-center"
                         onClick={() => handleEdit(item)}
                       >
-                        <Edit className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
+                        <Edit className="h-4 w-4 md:h-5 md:w-5" />
                       </button>
 
                       <button
                         className="bg-[#f04444] text-white p-2 rounded-lg hover:bg-[#a02f2f] flex items-center justify-center"
                         onClick={() => removeItem(item.id)}
                       >
-                        <Trash className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
+                        <Trash className="h-4 w-4 md:h-5 md:w-5" />
                       </button>
                     </div>
                   </td>

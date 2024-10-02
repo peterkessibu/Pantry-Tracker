@@ -1,10 +1,23 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation"; // Import useRouter from Next.js
 import useAuth from "../hooks/useAuth";
 import { LogOut } from "lucide-react";
 
-export const UserHeader = ({ handleLogout }) => {
+export const UserHeader = () => {
   const { user } = useAuth(); // Access user from useAuth
+  const router = useRouter(); // Initialize router for navigation
+
+  const handleLogout = () => {
+    // Clear all caches
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Perform any additional logout operations (e.g., call an API if needed)
+
+    // Redirect to the homepage
+    router.push("/");
+  };
 
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86] fixed top-0 left-0 w-full z-50 shadow-md">
@@ -33,11 +46,10 @@ export const UserHeader = ({ handleLogout }) => {
 function Button({ children, variant, ...props }) {
   return (
     <button
-      className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-        variant === "outline"
+      className={`px-4 py-2 rounded-md text-sm font-medium transition ${variant === "outline"
           ? "border border-gray-300"
           : "bg-green-800 text-white"
-      }`}
+        }`}
       {...props}
     >
       {children}
