@@ -55,7 +55,7 @@ const MainSection = () => {
 function Button({ children, variant, ...props }) {
   return (
     <button
-      className={`px-4 py-2 rounded-md text-sm font-medium transition ${
+      className={`px-4 py-2 rounded-md text-base font-medium transition ${
         variant === "outline"
           ? "border border-gray-300"
           : "bg-green-800 text-white"

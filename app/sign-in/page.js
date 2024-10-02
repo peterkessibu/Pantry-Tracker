@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, googleProvider } from "../firebase"; // Import Firebase
+import { auth, googleProvider } from "../firebase";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import Link from "next/link";
 import AuthHeader from "../components/AuthHeader";
