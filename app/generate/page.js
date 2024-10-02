@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import useAuth from "../hooks/useAuth";
 import usePantry from "../hooks/usePantry";
 import { Edit, Trash } from "lucide-react";
+import { UserHeader } from "../components/UserHeader";
 
 const HomePage = () => {
   const [open, setOpen] = useState(false);
@@ -138,10 +139,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-[#e2f5f3] w-full flex flex-col items-center justify-center p-5">
       {/* Title Section */}
-      <div className="p-4 mb-6 bg-white rounded-lg shadow-lg w-full max-w-3xl flex justify-center">
-        <ShelfIcon className="h-6 w-6" />
-        <span className="text-teal-600 ml-2 text-xl">Shelfsense</span>
-      </div>
+      <UserHeader />
 
       {/* Analytics Component */}
       <Analytics />
@@ -151,14 +149,14 @@ const HomePage = () => {
         <div className="flex flex-row justify-between w-full">
           <button
             onClick={handleOpen}
-            className="bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition duration-300"
+            className="bg-[#408d86] text-white py-2 px-4 rounded-lg hover:bg-[#2b5c58] transition duration-300"
           >
             Add Item
           </button>
 
           <button
             onClick={sortInventory}
-            className="bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition duration-300"
+            className="bg-[#408d86] text-white py-2 px-4 rounded-lg hover:bg-[#2b5c58] transition duration-300"
           >
             {isSorted ? "Unsort" : "Sort A-Z"}
           </button>
@@ -206,7 +204,7 @@ const HomePage = () => {
                   <td className="px-4 py-3 border-b text-gray-600">
                     <div className="flex items-center gap-2">
                       <button
-                        className="bg-teal-600 text-white py-1 px-2 rounded-lg hover:bg-teal-700 transition duration-300"
+                        className="bg-[#408d86] text-white py-1 px-2 rounded-lg hover:bg-[#2b5c58] transition duration-300"
                         onClick={() =>
                           updateItemQuantity(item.id, item.quantity + 1)
                         }
@@ -230,17 +228,17 @@ const HomePage = () => {
                   <td className="px-4 py-3 border-b text-center">
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-2">
                       <button
-                        className="bg-blue-500 text-white py-1 px-3 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center"
+                        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center"
                         onClick={() => handleEdit(item)}
                       >
-                        <Edit className="h-5 w-5" /> {/* Edit Icon */}
+                        <Edit className="h-5 w-5" />
                       </button>
 
                       <button
-                        className="bg-red-600 text-white py-1 px-3 rounded-lg hover:bg-red-500 transition duration-300 flex items-center justify-center"
+                        className="bg-[#f04444] text-white p-2 rounded-lg hover:bg-[#a02f2f] transition duration-300 flex items-center justify-center"
                         onClick={() => removeItem(item.id)}
                       >
-                        <Trash className="h-5 w-5" /> {/* Trash Icon */}
+                        <Trash className="h-5 w-5 " />
                       </button>
                     </div>
                   </td>
@@ -281,26 +279,12 @@ const HomePage = () => {
               </button>
               <button
                 onClick={handleSave}
-                className="bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700"
+                className="bg-[#408d86] text-white py-2 px-4 rounded-lg hover:bg-[#2b5c58]"
               >
                 {editMode ? "Save Changes" : "Add Item"}
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Message Toast */}
-      {messageOpen && (
-        <div className="fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg">
-          {message}
-        </div>
-      )}
-
-      {/* Sorted Message */}
-      {sortedMessageShown && (
-        <div className="fixed bottom-5 left-5 bg-blue-500 text-white py-2 px-4 rounded-lg shadow-lg">
-          Inventory {isSorted ? "sorted" : "unsorted"}
         </div>
       )}
     </div>

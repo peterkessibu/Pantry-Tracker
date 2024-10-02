@@ -1,22 +1,29 @@
 "use client";
 import React from "react";
+import useAuth from "../hooks/useAuth";
+import { LogOut } from "lucide-react";
 
-const UserHeader = ({ user, handleLogout }) => {
+export const UserHeader = ({ handleLogout }) => {
+  const { user } = useAuth(); // Access user from useAuth
+
   return (
-    <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86]">
-      <Link
-        className="flex items-center justify-center md:justify-start"
-        href="/"
-      >
+    <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86] fixed top-0 left-0 w-full z-50 shadow-md">
+      <Link className="flex items-center justify-start md:ml-8 ml-2" href="/">
         <ShelfIcon className="h-6 w-6" />
         <span className="text-white ml-2 text-xl">Shelfsense</span>
       </Link>
-      <div className="flex items-center">
+      <div className="flex justify-center items-center md:mr-8 mr-2">
+        {/* Display user first name if user exists */}
+        {user && (
+          <span className="text-white mr-4">
+            {user.displayName?.split(" ")[0]} {/* Display first name */}
+          </span>
+        )}
         <Button
           onClick={handleLogout}
-          className="bg-[#d13b3b] text-white p-2 rounded-lg transition duration-300 ease-in-out mx-4"
+          className="bg-[#0e503c] text-white p-2 rounded-lg transition duration-300 ease-in-out"
         >
-          Logout
+          <LogOut className="h-6 w-6" />
         </Button>
       </div>
     </header>
