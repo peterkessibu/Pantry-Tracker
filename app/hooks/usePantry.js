@@ -26,8 +26,9 @@ const usePantry = (userId) => {
     console.log("Setting up pantry listener for userId:", userId);
     setIsLoading(true);
 
-    const pantryRef = collection(db, "pantry");
-    const q = query(pantryRef, where("userId", "==", userId));
+    // Change the collection reference to include the userId
+    const pantryRef = collection(db, `users/${userId}/pantry`);
+    const q = query(pantryRef);
 
     const unsubscribe = onSnapshot(
       q,
@@ -56,10 +57,9 @@ const usePantry = (userId) => {
       const newItem = {
         name,
         quantity: parseInt(quantity, 10),
-        userId,
       };
       try {
-        const docRef = doc(collection(db, "pantry"));
+        const docRef = doc(collection(db, `users/${userId}/pantry`));
         await setDoc(docRef, newItem);
         console.log("Item added successfully");
       } catch (err) {
@@ -74,7 +74,7 @@ const usePantry = (userId) => {
     async (itemId, newQuantity) => {
       if (!userId) return;
       try {
-        const itemRef = doc(db, "pantry", itemId);
+        const itemRef = doc(db, `users/${userId}/pantry`, itemId);
         await setDoc(itemRef, { quantity: newQuantity }, { merge: true });
         console.log("Item quantity updated successfully");
       } catch (err) {
@@ -89,7 +89,7 @@ const usePantry = (userId) => {
     async (itemId, newName, newQuantity) => {
       if (!userId) return;
       try {
-        const itemRef = doc(db, "pantry", itemId);
+        const itemRef = doc(db, `users/${userId}/pantry`, itemId);
         await setDoc(
           itemRef,
           { name: newName, quantity: parseInt(newQuantity, 10) },
@@ -108,7 +108,7 @@ const usePantry = (userId) => {
     async (itemId) => {
       if (!userId) return;
       try {
-        const itemRef = doc(db, "pantry", itemId);
+        const itemRef = doc(db, `users/${userId}/pantry`, itemId);
         await deleteDoc(itemRef);
         console.log("Item deleted successfully");
       } catch (err) {
