@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Analytics } from "@vercel/analytics/react";
 import useAuth from "../hooks/useAuth";
 import usePantry from "../hooks/usePantry";
 import { Edit, Trash } from "lucide-react";
@@ -156,10 +155,8 @@ const HomePage = () => {
       {/* Title Section */}
       <UserHeader />
 
-      {/* Analytics Component */}
-      <Analytics />
-
-      <div className="flex flex-col gap-4 w-full max-w-xl px-4 mb-6">
+      {/* Content Section with Margin */}
+      <div className="mt-2 w-full flex flex-col gap-4 max-w-xl px-4 mb-6"> {/* Change mt-2 for 10px margin */}
         {/* Search Input centered */}
         <input
           type="text"
@@ -168,6 +165,7 @@ const HomePage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="border border-gray-300 bg-white h-10 px-4 rounded-lg text-sm focus:outline-none w-full"
         />
+
         {/* Row for Add Item and Sort buttons on mobile */}
         <div className="flex flex-row justify-between w-full">
           <button
