@@ -145,6 +145,14 @@ const HomePage = () => {
       <Analytics />
 
       <div className="flex flex-col gap-4 w-full max-w-xl px-4 mb-6">
+        {/* Search Input centered */}
+        <input
+          type="text"
+          placeholder="Search items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border border-gray-300 bg-white h-10 px-4 rounded-lg text-sm focus:outline-none w-full"
+        />
         {/* Row for Add Item and Sort buttons on mobile */}
         <div className="flex flex-row justify-between w-full">
           <button
@@ -161,15 +169,6 @@ const HomePage = () => {
             {isSorted ? "Unsort" : "Sort A-Z"}
           </button>
         </div>
-
-        {/* Search Input centered */}
-        <input
-          type="text"
-          placeholder="Search items..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="border border-gray-300 bg-white h-10 px-4 rounded-lg text-sm focus:outline-none w-full"
-        />
       </div>
 
       {/* Inventory Items Section */}
