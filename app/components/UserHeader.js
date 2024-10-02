@@ -12,12 +12,6 @@ const UserHeader = ({ user, handleLogout }) => {
         <span className="text-white ml-2 text-xl">Shelfsense</span>
       </Link>
       <div className="flex items-center">
-        <img
-          src={user.photoURL || "/default-avatar.png"}
-          alt="User avatar"
-          className="w-10 h-10 rounded-full mr-4"
-        />
-        <span className="text-white hidden sm:block">{user.displayName}</span>
         <Button
           onClick={handleLogout}
           className="bg-[#d13b3b] text-white p-2 rounded-lg transition duration-300 ease-in-out mx-4"
