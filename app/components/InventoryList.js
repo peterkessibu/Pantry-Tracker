@@ -2,77 +2,42 @@
 
 import React, { useState } from "react";
 
-const InventoryList = ({
-  items,
-  updateItemQuantity,
-  addPantryItem,
-  removeItem,
-}) => {
+const InventoryList = ({ items, updateItemQuantity, editItem, deleteItem }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState("");
-  const [editMode, setEditMode] = useState(false);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedItem(null);
     setItemName("");
     setItemQuantity("");
-    setEditMode(false);
   };
 
   const handleSave = async () => {
-    try {
-      if (editMode && selectedItem) {
-        await updateItemQuantity(selectedItem.id, parseInt(itemQuantity));
-      } else {
-        await addPantryItem(itemName, parseInt(itemQuantity));
-      }
-      handleCloseModal();
-    } catch (error) {
-      console.error("Error saving item:", error);
+    if (selectedItem) {
+      await editItem(selectedItem.id, itemName, parseInt(itemQuantity, 10));
     }
+    handleCloseModal();
   };
 
   const handleEditItem = (item) => {
     setSelectedItem(item);
     setItemName(item.name);
     setItemQuantity(item.quantity.toString());
-    setEditMode(true);
     setIsModalOpen(true);
   };
 
   const handleRemoveItem = async (itemId) => {
     if (confirm("Are you sure you want to remove this item?")) {
-      try {
-        await removeItem(itemId); // Use removeItem from props
-      } catch (error) {
-        console.error("Error removing item:", error);
-      }
-    }
-  };
-
-  const handleQuantityChange = async (itemId, increment) => {
-    const item = items.find(item => item.id === itemId); // Get the current item
-    const newQuantity = item.quantity + increment; // Calculate new quantity
-
-    if (newQuantity >= 0) {
-      await updateItemQuantity(itemId, newQuantity); // Update the quantity
+      await deleteItem(itemId);
     }
   };
 
   const getTotalItems = () => {
     return items.reduce((total, item) => total + item.quantity, 0);
   };
-
-  if (!items.length) {
-    return (
-      <p className="text-gray-500">
-        No items found. Add new items to your inventory.
-      </p>
-    );
-  }
 
   return (
     <div className="w-full p-3 sm:p-5 lg:p-8 rounded-xl border-[#10423e] shadow-lg bg-white mt-6 mx-2">
@@ -102,7 +67,7 @@ const InventoryList = ({
               <div className="flex gap-1 items-center">
                 <button
                   className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#1e968c] transition duration-300 text-xs sm:text-sm md:text-base"
-                  onClick={() => handleQuantityChange(item.id, 1)} // Increment by 1
+                  onClick={() => updateItemQuantity(item.id, 1)}
                 >
                   +
                 </button>
@@ -111,7 +76,7 @@ const InventoryList = ({
                 </span>
                 <button
                   className="bg-white text-black border-black border-[1px] py-1 px-2 sm:py-2 sm:px-3 md:py-2 md:px-4 rounded-full hover:bg-[#ff4646] transition duration-300 text-xs sm:text-sm md:text-base"
-                  onClick={() => handleQuantityChange(item.id, -1)} // Decrement by 1
+                  onClick={() => updateItemQuantity(item.id, -1)}
                   disabled={item.quantity === 0}
                 >
                   -
@@ -137,9 +102,7 @@ const InventoryList = ({
       </div>
 
       {isModalOpen && (
-        <div
-          className={`fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50 ${isModalOpen ? "block" : "hidden"}`}
-        >
+        <div className="fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-xl shadow-lg flex flex-col gap-4 w-11/12 sm:w-3/4 md:w-1/2 lg:w-1/3 relative p-6">
             <button
               className="absolute top-2 right-2 bg-red-700 text-white p-2 rounded-full hover:bg-red-600"
@@ -162,9 +125,7 @@ const InventoryList = ({
               </svg>
             </button>
 
-            <h3 className="text-lg font-bold text-gray-700">
-              {editMode ? "Edit Item" : "Add New Item"}
-            </h3>
+            <h3 className="text-lg font-bold text-gray-700">Edit Item</h3>
 
             <input
               type="text"
@@ -187,7 +148,7 @@ const InventoryList = ({
               className="bg-[#408d86] text-white py-2 rounded-lg hover:bg-[#2f6e69] transition duration-300"
               onClick={handleSave}
             >
-              {editMode ? "Save Changes" : "Add Item"}
+              Save Changes
             </button>
           </div>
         </div>

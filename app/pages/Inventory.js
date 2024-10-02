@@ -14,10 +14,9 @@ export default function InventoryPage() {
     error,
     addPantryItem,
     updateItemQuantity,
-    removeItem,
+    editPantryItem,
+    deletePantryItem,
   } = usePantry(userId);
-
-  bouncy.register();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -43,7 +42,8 @@ export default function InventoryPage() {
     <InventoryList
       items={items}
       updateItemQuantity={updateItemQuantity}
-      removeItem={removeItem}
+      editItem={editPantryItem}
+      deleteItem={deletePantryItem}
       addPantryItem={addPantryItem}
     />
   );

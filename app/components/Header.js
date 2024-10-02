@@ -6,35 +6,36 @@ import AuthHeader from "./AuthHeader";
 import UserHeader from "./UserHeader";
 
 const Header = () => {
-    const [user, setUser] = useState(null);
-    const router = useRouter();
+  const [user, setUser] = useState(null);
+  const router = useRouter();
 
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-            setUser(currentUser);
-        });
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
 
-        return () => unsubscribe();
-    }, []);
+    return () => unsubscribe();
+  }, []);
 
-    const handleLogout = () => {
-        localStorage.clear();
-        sessionStorage.clear();
+  const handleLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
 
-        auth.signOut()
-            .then(() => {
-                router.push("/");
-            })
-            .catch((error) => {
-                console.error("Logout error: ", error);
-            });
-    };
+    auth
+      .signOut()
+      .then(() => {
+        router.push("/");
+      })
+      .catch((error) => {
+        console.error("Logout error: ", error);
+      });
+  };
 
-    return user ? (
-        <UserHeader user={user} handleLogout={handleLogout} />
-    ) : (
-        <AuthHeader />
-    );
+  return user ? (
+    <UserHeader user={user} handleLogout={handleLogout} />
+  ) : (
+    <AuthHeader />
+  );
 };
 
 export default Header;

@@ -3,39 +3,47 @@ import { useState, useEffect, useCallback } from "react";
 import { db } from "../firebase";
 import {
   collection,
-  query,
-  onSnapshot,
-  updateDoc,
   doc,
+  setDoc,
   deleteDoc,
-  addDoc,
-  orderBy,
+  onSnapshot,
+  query,
+  where,
 } from "firebase/firestore";
 
 const usePantry = (userId) => {
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      console.log("No userId provided to usePantry");
+      setIsLoading(false);
+      return;
+    }
 
-    const collectionRef = collection(db, "users", userId, "inventory");
-    const q = query(collectionRef, orderBy("name"));
+    console.log("Setting up pantry listener for userId:", userId);
+    setIsLoading(true);
+
+    const pantryRef = collection(db, "pantry");
+    const q = query(pantryRef, where("userId", "==", userId));
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const fetchedItems = snapshot.docs.map((doc) => ({
+        const newItems = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setItems(fetchedItems);
-        setLoading(false);
+        console.log("Fetched items:", newItems);
+        setItems(newItems);
+        setIsLoading(false);
       },
       (err) => {
+        console.error("Error in pantry listener:", err);
         setError(err);
-        setLoading(false);
+        setIsLoading(false);
       },
     );
 
@@ -43,22 +51,20 @@ const usePantry = (userId) => {
   }, [userId]);
 
   const addPantryItem = useCallback(
-    async (itemName, quantity) => {
-      if (!userId) {
-        throw new Error("User ID is undefined");
-      }
+    async (name, quantity) => {
+      if (!userId) return;
+      const newItem = {
+        name,
+        quantity: parseInt(quantity, 10),
+        userId,
+      };
       try {
-        const docRef = await addDoc(
-          collection(db, "users", userId, "inventory"),
-          {
-            name: itemName,
-            quantity: quantity,
-          },
-        );
-        return { id: docRef.id, name: itemName, quantity: quantity };
-      } catch (error) {
-        setError(error);
-        throw error;
+        const docRef = doc(collection(db, "pantry"));
+        await setDoc(docRef, newItem);
+        console.log("Item added successfully");
+      } catch (err) {
+        console.error("Error adding item:", err);
+        setError(err);
       }
     },
     [userId],
@@ -66,55 +72,61 @@ const usePantry = (userId) => {
 
   const updateItemQuantity = useCallback(
     async (itemId, newQuantity) => {
-      if (!userId || !itemId) {
-        throw new Error("User ID or Item ID is undefined");
-      }
+      if (!userId) return;
       try {
-        const itemRef = doc(db, "users", userId, "inventory", itemId);
-        await updateDoc(itemRef, { quantity: newQuantity });
+        const itemRef = doc(db, "pantry", itemId);
+        await setDoc(itemRef, { quantity: newQuantity }, { merge: true });
+        console.log("Item quantity updated successfully");
+      } catch (err) {
+        console.error("Error updating item quantity:", err);
+        setError(err);
+      }
+    },
+    [userId],
+  );
 
-        setItems((prevItems) =>
-          prevItems.map((item) =>
-            item.id === itemId ? { ...item, quantity: newQuantity } : item,
-          ),
+  const editPantryItem = useCallback(
+    async (itemId, newName, newQuantity) => {
+      if (!userId) return;
+      try {
+        const itemRef = doc(db, "pantry", itemId);
+        await setDoc(
+          itemRef,
+          { name: newName, quantity: parseInt(newQuantity, 10) },
+          { merge: true },
         );
-      } catch (error) {
-        setError(error);
-        throw error;
+        console.log("Item edited successfully");
+      } catch (err) {
+        console.error("Error editing item:", err);
+        setError(err);
       }
     },
     [userId],
   );
 
-  const removeItem = useCallback(
+  const deletePantryItem = useCallback(
     async (itemId) => {
-      if (!userId || !itemId) {
-        throw new Error("User ID or Item ID is undefined");
-      }
+      if (!userId) return;
       try {
-        const itemRef = doc(db, "users", userId, "inventory", itemId);
+        const itemRef = doc(db, "pantry", itemId);
         await deleteDoc(itemRef);
-        setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-      } catch (error) {
-        setError(error);
-        throw error;
+        console.log("Item deleted successfully");
+      } catch (err) {
+        console.error("Error deleting item:", err);
+        setError(err);
       }
     },
     [userId],
   );
-
-  const getPantryItems = useCallback(() => {
-    return items;
-  }, [items]);
 
   return {
     items,
-    loading,
     error,
+    isLoading,
     addPantryItem,
     updateItemQuantity,
-    removeItem,
-    getPantryItems,
+    editPantryItem,
+    deletePantryItem,
   };
 };
 
