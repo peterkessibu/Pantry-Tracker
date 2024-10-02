@@ -149,14 +149,14 @@ const HomePage = () => {
         <div className="flex flex-row justify-between w-full">
           <button
             onClick={handleOpen}
-            className="bg-[#408d86] text-white py-2 px-4 rounded-lg hover:bg-[#2b5c58] transition duration-300"
+            className="bg-[#408d86] text-white py-2 px-4 rounded-lg hover:bg-[#2b5c58]"
           >
             Add Item
           </button>
 
           <button
             onClick={sortInventory}
-            className="bg-[#408d86] text-white py-2 px-4 rounded-lg hover:bg-[#2b5c58] transition duration-300"
+            className="bg-[#408d86] text-white py-2 px-4 rounded-lg hover:bg-[#2b5c58]"
           >
             {isSorted ? "Unsort" : "Sort A-Z"}
           </button>
@@ -181,13 +181,13 @@ const HomePage = () => {
           <table className="min-w-full bg-white table-auto border-collapse">
             <thead>
               <tr>
-                <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-800">
+                <th className="px-4 py-2 border-b text-left text-xs md:text-sm lg:text-base font-semibold text-gray-800">
                   Item Name
                 </th>
-                <th className="px-4 py-2 border-b text-left text-sm font-semibold text-gray-800">
+                <th className="px-4 py-2 border-b text-left text-xs md:text-sm lg:text-base font-semibold text-gray-800">
                   Quantity
                 </th>
-                <th className="px-4 py-2 border-b text-center text-sm font-semibold text-gray-800">
+                <th className="px-4 py-2 border-b text-center text-xs md:text-sm lg:text-base font-semibold text-gray-800">
                   Actions
                 </th>
               </tr>
@@ -196,7 +196,7 @@ const HomePage = () => {
               {sortedInventory.map((item) => (
                 <tr key={item.id} className="bg-gray-50 hover:bg-gray-100">
                   {/* Item Name */}
-                  <td className="px-4 py-3 border-b text-gray-800 capitalize">
+                  <td className="px-4 py-3 border-b text-gray-800 capitalize text-xs md:text-sm lg:text-base">
                     {item.name}
                   </td>
 
@@ -204,19 +204,15 @@ const HomePage = () => {
                   <td className="px-4 py-3 border-b text-gray-600">
                     <div className="flex items-center gap-2">
                       <button
-                        className="bg-[#408d86] text-white py-1 px-2 rounded-lg hover:bg-[#2b5c58] transition duration-300"
-                        onClick={() =>
-                          updateItemQuantity(item.id, item.quantity + 1)
-                        }
+                        className="bg-[#408d86] text-white py-1 px-2 rounded-lg hover:bg-[#2b5c58]"
+                        onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
                       >
                         +
                       </button>
                       <span className="text-gray-800">{item.quantity}</span>
                       <button
-                        className="bg-gray-300 text-gray-600 py-1 px-2 rounded-lg hover:bg-red-500 hover:text-white transition duration-300"
-                        onClick={() =>
-                          updateItemQuantity(item.id, item.quantity - 1)
-                        }
+                        className="bg-gray-300 text-gray-600 py-1 px-2 rounded-lg hover:bg-red-500 hover:text-white"
+                        onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
                         disabled={item.quantity === 0}
                       >
                         -
@@ -228,17 +224,17 @@ const HomePage = () => {
                   <td className="px-4 py-3 border-b text-center">
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-2">
                       <button
-                        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center"
+                        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 flex items-center justify-center"
                         onClick={() => handleEdit(item)}
                       >
-                        <Edit className="h-5 w-5" />
+                        <Edit className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
                       </button>
 
                       <button
-                        className="bg-[#f04444] text-white p-2 rounded-lg hover:bg-[#a02f2f] transition duration-300 flex items-center justify-center"
+                        className="bg-[#f04444] text-white p-2 rounded-lg hover:bg-[#a02f2f] flex items-center justify-center"
                         onClick={() => removeItem(item.id)}
                       >
-                        <Trash className="h-5 w-5 " />
+                        <Trash className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
                       </button>
                     </div>
                   </td>
@@ -247,6 +243,7 @@ const HomePage = () => {
             </tbody>
           </table>
         </div>
+
       </div>
 
       {/* Add/Edit Item Modal */}
