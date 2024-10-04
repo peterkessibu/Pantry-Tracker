@@ -257,7 +257,7 @@ const HomePage = () => {
         </div>
         {open && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-            <div className="bg-white p-5 rounded-lg shadow-xl">
+            <div className="bg-white mx-3 p-5 rounded-lg shadow-xl">
               <h2 className="text-xl font-bold mb-4">{editMode ? "Edit Item" : "Add New Item"}</h2>
               <input
                 type="text"
