@@ -5,7 +5,7 @@ import useAuth from "../hooks/useAuth";
 import usePantry from "../hooks/usePantry";
 import { Edit, Trash } from "lucide-react";
 import { UserHeader } from "../components/UserHeader";
-import  Loading  from "./loading"; 
+import Loading from "./loading";
 
 const HomePage = () => {
   const [open, setOpen] = useState(false);
@@ -156,7 +156,9 @@ const HomePage = () => {
       <UserHeader />
 
       {/* Content Section with Margin */}
-      <div className="mt-2 w-full flex flex-col gap-4 max-w-xl px-4 mb-6"> {/* Change mt-2 for 10px margin */}
+      <div className="mt-2 w-full flex flex-col gap-4 max-w-xl px-4 mb-6">
+        {" "}
+        {/* Change mt-2 for 10px margin */}
         {/* Search Input centered */}
         <input
           type="text"
@@ -165,7 +167,6 @@ const HomePage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="border border-gray-300 bg-white h-10 px-4 rounded-lg text-sm focus:outline-none w-full"
         />
-
         {/* Row for Add Item and Sort buttons on mobile */}
         <div className="flex flex-row justify-between w-full">
           <button
@@ -217,14 +218,18 @@ const HomePage = () => {
                     <div className="flex items-center gap-2">
                       <button
                         className="bg-[#408d86] text-white py-1 px-2 rounded-lg hover:bg-[#2b5c58]"
-                        onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateItemQuantity(item.id, item.quantity + 1)
+                        }
                       >
                         +
                       </button>
                       <span className="text-gray-800">{item.quantity}</span>
                       <button
                         className="bg-gray-300 text-gray-600 py-1 px-2 rounded-lg hover:bg-red-500 hover:text-white"
-                        onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                        onClick={() =>
+                          updateItemQuantity(item.id, item.quantity - 1)
+                        }
                         disabled={item.quantity === 0}
                       >
                         -

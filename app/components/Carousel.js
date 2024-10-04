@@ -1,16 +1,18 @@
-
 import Image from "next/image";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 const Carousel = ({ images }) => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
     const scrollWidth = scrollRef.current.scrollWidth;
-    const animationDuration = scrollWidth / 70; 
+    const animationDuration = scrollWidth / 70;
 
-    scrollRef.current.style.setProperty('--scroll-width', `${scrollWidth}px`);
-    scrollRef.current.style.setProperty('--animation-duration', `${animationDuration}s`);
+    scrollRef.current.style.setProperty("--scroll-width", `${scrollWidth}px`);
+    scrollRef.current.style.setProperty(
+      "--animation-duration",
+      `${animationDuration}s`,
+    );
   }, [images]);
 
   return (

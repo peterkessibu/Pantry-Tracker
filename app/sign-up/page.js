@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, googleProvider, db } from "../firebase"; 
+import { auth, googleProvider, db } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore"; 
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import Link from "next/link";
-import AuthHeader from "../components/AuthHeader"; 
-import Footer from "../components/Footer"; 
+import AuthHeader from "../components/AuthHeader";
+import Footer from "../components/Footer";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
