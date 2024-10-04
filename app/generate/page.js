@@ -255,7 +255,41 @@ const HomePage = () => {
             </tbody>
           </table>
         </div>
-
+        {open && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+            <div className="bg-white p-5 rounded-lg shadow-xl">
+              <h2 className="text-xl font-bold mb-4">{editMode ? "Edit Item" : "Add New Item"}</h2>
+              <input
+                type="text"
+                placeholder="Item name"
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+                className="border-2 border-gray-300 p-2 mb-4 w-full rounded"
+              />
+              <input
+                type="number"
+                placeholder="Quantity"
+                value={itemQuantity}
+                onChange={(e) => setItemQuantity(e.target.value)}
+                className="border-2 border-gray-300 p-2 mb-4 w-full rounded"
+              />
+              <div className="flex justify-end">
+                <button
+                  onClick={handleClose}
+                  className="bg-gray-300 text-black py-2 px-4 rounded-lg mr-2 hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="bg-[#10423e] text-white py-2 px-4 rounded-lg hover:bg-[#1e968c]"
+                >
+                  {editMode ? "Save Changes" : "Add Item"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Messages */}
         {sortedMessageShown && (
           <div className="mt-4 text-center text-green-600">
