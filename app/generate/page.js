@@ -39,7 +39,6 @@ const HomePage = () => {
     }
   }, [user, router]);
 
-  // New useEffect to handle loading
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false); // Set loading to false after 3 seconds
@@ -158,8 +157,6 @@ const HomePage = () => {
       {/* Content Section with Margin */}
       <div className="mt-2 w-full flex flex-col gap-4 max-w-xl px-4 mb-6">
         {" "}
-        {/* Change mt-2 for 10px margin */}
-        {/* Search Input centered */}
         <input
           type="text"
           placeholder="Search items..."
@@ -167,7 +164,6 @@ const HomePage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="border border-gray-300 bg-white h-10 px-4 rounded-lg text-sm focus:outline-none w-full"
         />
-        {/* Row for Add Item and Sort buttons on mobile */}
         <div className="flex flex-row justify-between w-full">
           <button
             onClick={handleOpen}
@@ -241,13 +237,13 @@ const HomePage = () => {
                   <td className="px-4 py-3 border-b text-center">
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-2">
                       <button
-                        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 flex items-center justify-center"
+                        className=" text-blue-500 p-2 rounded-lg flex items-center justify-center"
                         onClick={() => handleEdit(item)}
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 flex items-center justify-center"
+                        className=" text-red-500 p-2 rounded-lg flex items-center justify-center"
                         onClick={() => removeItem(item.id)}
                       >
                         <Trash size={16} />
