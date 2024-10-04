@@ -17,16 +17,16 @@ export const UserHeader = () => {
   };
 
   return (
-    <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86] fixed top-0 left-0 w-full shadow-md z-10"> {/* z-10 to ensure it's on top */}
+    <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86] fixed top-0 left-0 w-full shadow-md z-10"> 
       <Link className="flex items-center justify-start md:ml-8 ml-2" href="/">
         <ShelfIcon className="h-6 w-6" />
         <span className="text-white ml-2 text-xl">Shelfsense</span>
       </Link>
-      <div className="flex justify-center items-center md:mr-8 mr-2 relative"> {/* Added relative position */}
+      <div className="flex justify-center items-center md:mr-8 mr-2 relative">
         {/* Display user first name if user exists */}
         {user && (
           <span className="text-white mr-4">
-            {user.displayName?.split(" ")[0]} {/* Display first name */}
+            {user.displayName?.split(" ")[0]}
           </span>
         )}
         <Button
@@ -39,7 +39,7 @@ export const UserHeader = () => {
 
       {/* Confirmation Dropdown */}
       {showLogoutConfirm && (
-        <div className="mt-4 bg-white shadow-lg rounded-md p-6 mr-4 w-auto absolute top-full right-0"> {/* Adjusted position */}
+        <div className="mt-4 bg-white shadow-lg rounded-md p-6 mr-4 w-auto absolute top-full right-0"> 
           <p className="text-gray-700 mb-2">Are you sure you want to log out?</p>
           <div className="flex justify-between space-x-2">
             <Button
