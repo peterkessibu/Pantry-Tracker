@@ -4,6 +4,10 @@ import Carousel from "./Carousel"; // Import Carousel Component
 import FeaturesSection from "./FeaturesSection"; // Import Features Section Component
 import Link from "next/link";
 
+/**
+ * Renders the main section of the application's landing page
+ * @returns {JSX.Element} The main section component containing a hero section with a call-to-action, a carousel of images, and a features section
+ */
 const MainSection = () => {
   const images = [
     "/images/pan.png",
