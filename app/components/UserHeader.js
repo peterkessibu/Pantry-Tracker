@@ -9,6 +9,10 @@ export const UserHeader = () => {
   const router = useRouter(); // Initialize router for navigation
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // State to manage dropdown visibility
 
+  /**
+   * Handles the user logout process
+   * @returns {void} This function doesn't return anything
+   */
   const handleLogout = () => {
     // Clear all caches
     localStorage.clear();
@@ -52,6 +56,13 @@ export const UserHeader = () => {
           </div>
         </div>
       )}
+    /**
+     * Renders a customizable button component with different variants.
+     * @param {React.ReactNode} children - The content to be displayed inside the button.
+     * @param {string} variant - The visual style of the button. If "outline", renders an outlined button; otherwise, renders a solid button.
+     * @param {Object} props - Additional props to be spread on the button element.
+     * @returns {JSX.Element} A styled button component.
+     */
     </header>
   );
 };
@@ -78,6 +89,11 @@ function Link({ children, ...props }) {
   );
 }
 
+/**
+ * Renders a shelf icon as an SVG element
+ * @param {Object} props - The props to be spread onto the SVG element
+ * @returns {JSX.Element} An SVG representation of a shelf icon
+ */
 function ShelfIcon(props) {
   return (
     <svg
