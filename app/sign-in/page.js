@@ -8,6 +8,10 @@ import Link from "next/link";
 import AuthHeader from "../components/AuthHeader";
 import Footer from "../components/Footer";
 
+/**
+ * Renders a sign-in page component with email/password and Google authentication options.
+ * @returns {JSX.Element} A React component representing the sign-in page.
+ */
 const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

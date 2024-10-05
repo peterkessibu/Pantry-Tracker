@@ -30,6 +30,10 @@ export const saveUserDataFirestore = async () => {
   }
 };
 
+/**
+ * Retrieves the current authenticated user's data from Firestore.
+ * @returns {Promise<void>} Does not return a value, but logs the user data to the console if found.
+ */
 export const getUserDataFirestore = async () => {
   const user = auth.currentUser;
   if (user) {

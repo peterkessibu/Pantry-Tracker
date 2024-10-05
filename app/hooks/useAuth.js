@@ -4,6 +4,14 @@ import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 
+/**
+ * Custom hook for managing authentication state
+ * @returns {Object} An object containing the current user's information
+ * @returns {Object|null} user - The current user object, or null if not logged in
+ * @returns {string} user.uid - The unique identifier of the user
+ * @returns {string|null} user.displayName - The display name of the user
+ * @returns {string} user.email - The email address of the user
+ */
 const useAuth = () => {
   const [user, setUser] = useState(null);
 

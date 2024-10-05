@@ -11,6 +11,18 @@ import {
   where,
 } from "firebase/firestore";
 
+/**
+ * Custom hook for managing a user's pantry items in a Firebase database.
+ * @param {string} userId - The unique identifier of the user.
+ * @returns {Object} An object containing:
+ *   - items: Array of pantry items
+ *   - error: Any error that occurred during database operations
+ *   - isLoading: Boolean indicating if data is being loaded
+ *   - addPantryItem: Function to add a new pantry item
+ *   - updateItemQuantity: Function to update the quantity of an existing item
+ *   - editPantryItem: Function to edit an existing pantry item
+ *   - deletePantryItem: Function to delete a pantry item
+ */
 const usePantry = (userId) => {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);

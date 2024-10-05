@@ -47,6 +47,13 @@ const FeaturesSection = () => {
     },
   ];
 
+  /**
+   * Renders a feature card component with an icon, title, and description.
+   * @param {React.ReactNode} icon - The icon to display at the top of the card.
+   * @param {string} title - The title of the feature card.
+   * @param {string} description - The description text for the feature.
+   * @returns {JSX.Element} A styled div containing the feature card content.
+   */
   const FeatureCard = ({ icon, title, description }) => {
     return (
       <div className="flex flex-col items-center space-y-2 border-gray-800 p-4 rounded-lg">
