@@ -6,7 +6,13 @@ import { auth } from "../firebase";
 import InventoryList from "../components/InventoryList";
 import usePantry from "../hooks/usePantry";
 
-export default function InventoryPage() {
+```
+/**
+ * Renders the Inventory page component
+ * @returns {JSX.Element|null} The rendered Inventory page or null if user is not authenticated
+ */
+
+```export default function InventoryPage() {
   const [userId, setUserId] = useState(null);
   const router = useRouter();
   const {
