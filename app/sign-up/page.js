@@ -9,6 +9,11 @@ import Link from "next/link";
 import AuthHeader from "../components/AuthHeader";
 import Footer from "../components/Footer";
 
+/**
+ * SignUpPage component for user registration
+ * Handles email/password and Google sign-up, creates user in Firestore, and manages form state
+ * @returns {JSX.Element} A sign-up form with email/password inputs and Google sign-up option
+ */
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
