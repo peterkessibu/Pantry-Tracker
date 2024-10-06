@@ -69,8 +69,8 @@ const SignUpPage = () => {
   return (
     <div className="h-screen w-full flex flex-col bg-[#e2f5f3]">
       <AuthHeader />
-      <div className="flex-grow w-full flex items-center justify-center">
-        <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-lg">
+      <div className="flex-grow w-full flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-white mx-4 p-4 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
           <form onSubmit={handleSignUp}>
