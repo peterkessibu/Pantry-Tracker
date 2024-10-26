@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react";
 
+/**
+ * A loading component that displays a spinner and a countdown timer
+ * @returns {JSX.Element} A div containing a spinning border and a loading message
+ */
 const Loading = () => {
   // Declare the component first
   const [seconds, setSeconds] = useState(5);

@@ -4,6 +4,11 @@ import { useEffect, useRef } from "react";
 const Carousel = ({ images }) => {
   const scrollRef = useRef(null);
 
+  /**
+   * Sets up the horizontal scrolling animation for the image carousel
+   * @param {Array} images - The array of images to be displayed in the carousel
+   * @returns {void} This effect does not return a value
+   */
   useEffect(() => {
     const scrollWidth = scrollRef.current.scrollWidth;
     const animationDuration = scrollWidth / 70;

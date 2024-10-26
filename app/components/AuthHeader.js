@@ -1,6 +1,10 @@
 "use client";
 import React from "react";
 
+/**
+ * Renders the authentication header component
+ * @returns {JSX.Element} The header component with a logo, title, and sign-in button
+ */
 const AuthHeader = () => {
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86]">
@@ -30,6 +34,15 @@ function Button({ children, variant, ...props }) {
       {...props}
     >
       {children}
+    ```
+    /**
+     * Renders a customized anchor element with hover underline effect.
+     * @param {Object} props - The properties passed to the component.
+     * @param {React.ReactNode} props.children - The content to be rendered inside the anchor element.
+     * @param {...Object} props.props - Additional props to be spread on the anchor element.
+     * @returns {JSX.Element} A React component representing an anchor element with custom styling.
+     */
+    ```
     </button>
   );
 }
@@ -42,6 +55,11 @@ function Link({ children, ...props }) {
   );
 }
 
+/**
+ * Renders a shelf icon as an SVG component
+ * @param {Object} props - The properties passed to the component
+ * @returns {JSX.Element} An SVG element representing a shelf icon
+ */
 function ShelfIcon(props) {
   return (
     <svg

@@ -1,6 +1,14 @@
 "use client";
 import React from "react";
 
+/**
+ * Renders a search bar component with input field and action buttons
+ * @param {string} searchQuery - The current search query value
+ * @param {function} setSearchQuery - Function to update the search query
+ * @param {function} onAddClick - Function to handle adding a new item
+ * @param {function} onSortClick - Function to handle sorting items
+ * @returns {JSX.Element} A div containing search input and action buttons
+ */
 const SearchBar = ({
   searchQuery,
   setSearchQuery,
