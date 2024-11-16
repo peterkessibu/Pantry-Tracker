@@ -34,9 +34,8 @@ export const UserHeader = () => {
     setShowUsernameDropdown(false);
   };
 
-
   return (
-    <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86] fixed top-0 left-0 w-full shadow-md z-10"> 
+    <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86] fixed top-0 left-0 w-full shadow-md z-10">
       <Link className="flex items-center justify-start md:ml-8 ml-2" href="/">
         <ShelfIcon className="h-6 w-6" />
         <span className="text-white ml-2 text-xl">Shelfsense</span>
@@ -88,8 +87,10 @@ export const UserHeader = () => {
 
       {/* Confirmation Dropdown */}
       {showLogoutConfirm && (
-        <div className="mt-4 bg-white shadow-lg rounded-md p-6 mr-4 w-auto absolute top-full right-0"> 
-          <p className="text-gray-700 mb-2">Are you sure you want to log out?</p>
+        <div className="mt-4 bg-white shadow-lg rounded-md p-6 mr-4 w-auto absolute top-full right-0">
+          <p className="text-gray-700 mb-2">
+            Are you sure you want to log out?
+          </p>
           <div className="flex justify-between space-x-2">
             <Button
               variant="outline"
@@ -108,10 +109,11 @@ export const UserHeader = () => {
 function Button({ children, variant, ...props }) {
   return (
     <button
-      className={`px-4 py-2 rounded-md text-sm font-medium transition ${variant === "outline"
-        ? "border border-gray-300 text-gray-700"
-        : "bg-green-800 text-white"
-        }`}
+      className={`px-4 py-2 rounded-md text-sm font-medium transition ${
+        variant === "outline"
+          ? "border border-gray-300 text-gray-700"
+          : "bg-green-800 text-white"
+      }`}
       {...props}
     >
       {children}
