@@ -8,6 +8,8 @@ export const UserHeader = () => {
   const { user } = useAuth(); // Access user from useAuth
   const router = useRouter(); // Initialize router for navigation
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // State to manage dropdown visibility
+  const [showUsernameDropdown, setShowUsernameDropdown] = useState(false); // State to manage username dropdown visibility
+  const [newUsername, setNewUsername] = useState(user?.displayName || ""); // State to manage new username input
 
   const handleLogout = () => {
     // Clear all caches
@@ -15,6 +17,23 @@ export const UserHeader = () => {
     sessionStorage.clear();
     router.push("/");
   };
+
+  const handleUsernameChange = (e) => {
+    setNewUsername(e.target.value);
+  };
+
+  const handleConfirmUsername = () => {
+    // Update the user display name logic here
+    // For example, you might want to update it in your authentication provider
+    user.displayName = newUsername;
+    setShowUsernameDropdown(false);
+  };
+
+  const handleCancelUsername = () => {
+    setNewUsername(user?.displayName || "");
+    setShowUsernameDropdown(false);
+  };
+
 
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center justify-between bg-[#408d86] fixed top-0 left-0 w-full shadow-md z-10"> 
@@ -25,7 +44,10 @@ export const UserHeader = () => {
       <div className="flex justify-center items-center md:mr-8 mr-2 relative">
         {/* Display user first name if user exists */}
         {user && (
-          <span className="text-white mr-4">
+          <span
+            className="text-white mr-4 cursor-pointer"
+            onClick={() => setShowUsernameDropdown(!showUsernameDropdown)}
+          >
             {user.displayName?.split(" ")[0]}
           </span>
         )}
@@ -36,6 +58,33 @@ export const UserHeader = () => {
           <LogOut className="h-6 w-6" />
         </Button>
       </div>
+
+      {/* Username Dropdown */}
+      {showUsernameDropdown && (
+        <div className="absolute top-12 right-0 bg-white shadow-md rounded-lg p-6">
+          <input
+            type="text"
+            value={newUsername}
+            onChange={handleUsernameChange}
+            className="border-[1px] p-2 rounded-lg w-full"
+            placeholder="Enter new username"
+          />
+          <div className="flex justify-end mt-2">
+            <button
+              onClick={handleConfirmUsername}
+              className="bg-[#0e503c] text-white px-4 py-2 rounded-lg mr-2"
+            >
+              Confirm
+            </button>
+            <button
+              onClick={handleCancelUsername}
+              className="bg-[#d33636] text-white px-4 py-2 rounded-lg"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Confirmation Dropdown */}
       {showLogoutConfirm && (
