@@ -3,7 +3,13 @@
 
 import { useState, useEffect } from "react";
 
-export default function Loading() {
+```
+/**
+ * Renders a loading component with a spinner and countdown timer.
+ * @returns {JSX.Element} A div containing a spinning border animation and a "Loading..." text.
+ */
+
+```export default function Loading() {
   const [seconds, setSeconds] = useState(5);
 
   useEffect(() => {

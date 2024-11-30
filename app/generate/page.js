@@ -7,6 +7,10 @@ import { Edit, Trash } from "lucide-react";
 import { UserHeader } from "../components/UserHeader";
 import Loading from "./loading";
 
+/**
+ * Renders the home page component of the pantry management application
+ * @returns {JSX.Element} The rendered HomePage component
+ */
 const HomePage = () => {
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
@@ -265,6 +269,11 @@ const HomePage = () => {
                 type="text"
                 placeholder="Item name"
                 value={itemName}
+                /**
+                 * Event handler for updating the item name state
+                 * @param {Object} e - The event object from the input change
+                 * @returns {void} This function does not return a value
+                 */
                 onChange={(e) => setItemName(e.target.value)}
                 className="border-2 border-gray-300 p-2 mb-4 w-full rounded"
               />

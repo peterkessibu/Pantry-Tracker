@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * Renders a footer component with copyright information
+ * @returns {JSX.Element} A footer element with centered copyright text
+ */
 const Footer = () => {
   return (
     <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-6 border-t">
